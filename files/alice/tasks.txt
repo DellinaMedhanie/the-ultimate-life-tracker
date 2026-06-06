@@ -1,0 +1,48 @@
+
+
+----------
+Created at: 2026-05-31T00:02:25.872282
+Title: Hydrate
+Notes: drink 80 oz of water
+Type: Goal
+Priority: Medium
+Status: In progress
+Due date: May312026
+
+
+----------
+Created at: 2026-06-03T23:05:16.074231
+Title: Organize closet
+Notes: 
+Type: Task
+Priority: Low
+Status: Not started
+Due date: Jun32026
+
+
+----------
+Created at: 2026-06-03T23:07:38.200721
+Title: Knit sweater
+Notes: 
+Type: Task
+Priority: Low
+Status: Not started
+Due date: Jun32026
+
+----------
+Created at: 2026-06-03T23:07:47.584407
+Title: Eat lunch
+Notes: 
+Type: Task
+Priority: High
+Status: Not started
+Due date: Jun32026
+
+----------
+Created at: 2026-06-03T23:21:20.346862
+Title: Take out garbage
+Notes: 
+Type: Task
+Priority: Low
+Status: Not started
+Due date: Jun32026
