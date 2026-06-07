@@ -59,10 +59,10 @@ class TaskForm
     	"2030", "2031", "2032", "2033",
     	"2034", "2035", "2036", "2037"};
  
+// will expand out to include Subtasks in future versions
  private String type[] 
-	= {"Task", "Subtask", "Project", 
-		"Goal", "Milestone"};
- 
+	= {"Task"};
+  
  private String status[] 
 	= {"Not started", "In progress", "blocked", 
 		"complete", "cancelled"};

@@ -54,7 +54,7 @@ public class NavBar {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setSize(700, 700);
+		frame.setSize(700, 600);
 		frame.setTitle("Life Management System");
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

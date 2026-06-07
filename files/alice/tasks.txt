@@ -46,3 +46,14 @@ Type: Task
 Priority: Low
 Status: Not started
 Due date: Jun32026
+
+----------
+Created at: 2026-06-06T20:37:46.694628
+Title: Mop floors
+Notes: use swiffer mop
+Type: Task
+Priority: High
+Status: In progress
+Due date: Jun62026
+
+

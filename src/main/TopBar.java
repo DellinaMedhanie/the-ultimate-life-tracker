@@ -12,7 +12,11 @@ public class TopBar extends JPanel {
 	 */
 	public TopBar() {
 		this.setBounds(17, 6, 666, 45);
+		setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Welcome");
+		lblNewLabel.setBounds(270, 6, 61, 16);
+		add(lblNewLabel);
 		
 	}
-
 }
