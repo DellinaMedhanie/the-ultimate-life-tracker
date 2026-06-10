@@ -37,15 +37,15 @@ public class TasksAtAGlance extends JPanel {
 		JPanel containerPanel = new JPanel();
 		containerPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
-		String firstTask = "";			
+		String firstTask = tasks.get(0);			
 		JLabel label = new JLabel(firstTask);
 		containerPanel.add(label);
 		
-		String secondTask = "";
+		String secondTask = tasks.get(1);
 		JLabel label_1 = new JLabel(secondTask);
 		containerPanel.add(label_1);
 		
-		String thirdTask = "";
+		String thirdTask = tasks.get(2);
 		JLabel label_2 = new JLabel(thirdTask);
 		containerPanel.add(label_2);
 		
