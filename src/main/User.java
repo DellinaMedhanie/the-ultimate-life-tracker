@@ -1,16 +1,26 @@
 package main;
 
 public class User {
-	private int userId; 
+	private String username;
+	private String password;
 
-	
-	User() {
-		// when creating a new user, automatically generate id
+	public User() {
+		// default constructor, in case it's needed elsewhere
 	}
-	
+
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 }
-
-
 
 /* 
 User specs from design doc
