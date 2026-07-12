@@ -25,6 +25,9 @@ public class Button extends JButton implements ActionListener {
 			if (actionState == "add task") {				
 				TaskForm form = new TaskForm();
 			}
+			else if (actionState == "transaction") {
+				DashboardController.onAddTransaction();
+			}
 		} else {
 			System.out.println("some eclipse error...");
 		}
