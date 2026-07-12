@@ -16,6 +16,7 @@ public class HomePanel extends JPanel {
 	 * Create the panel.
 	 */
 	public HomePanel() {
+		
 		this.setBounds(getVisibleRect());
 		this.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		setLayout(null);
@@ -30,8 +31,6 @@ public class HomePanel extends JPanel {
 		
 		glancePanel.setBounds(25, 62, 345, 232);
 		add(glancePanel);
-		
-		
 		
 	}
 
