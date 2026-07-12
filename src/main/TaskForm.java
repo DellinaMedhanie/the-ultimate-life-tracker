@@ -4,6 +4,7 @@ package main;
 // https://www.geeksforgeeks.org/java/java-swing-simple-user-registration-form/
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
@@ -15,7 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.FileNotFoundException;
 import java.io.BufferedWriter;
-import java.io.File; 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
 
 class TaskForm
@@ -53,7 +55,7 @@ class TaskForm
  private String months[]
      = { "Jan", "Feb", "Mar", "Apr",
          "May", "Jun", "July", "Aug",
-         "Sup", "Oct", "Nov", "Dec" };
+         "Sep", "Oct", "Nov", "Dec" };
  private String years[]
      = { "2026", "2027", "2028", "2029", 
     	"2030", "2031", "2032", "2033",
@@ -199,7 +201,7 @@ class TaskForm
  // by the user and act accordingly
  public void actionPerformed(ActionEvent e)
  {
-	 // this will dynamically change based on who the user is
+	 // TODO: this needs to change based on who the user is
 	 String user = "alice";
 	 String file = "files/" + user + "/tasks.txt";
      if (e.getSource() == sub) {
@@ -219,10 +221,13 @@ class TaskForm
     		 writer.newLine(); 
     		 writer.write("Status: " + aStatus.getSelectedItem().toString());
     		 writer.newLine();
-    		 writer.write("Due date: " + month.getSelectedItem().toString()
-    				 + date.getSelectedItem().toString() + year.getSelectedItem().toString());
+    		 // write to format "YYYY-MM-DD"
+    		 String dateString = createDateString(year.getSelectedItem().toString(), month.getSelectedItem().toString(), date.getSelectedItem().toString());
+    		 writer.write("Due date: " + dateString);
     		 writer.newLine(); 
     		 writer.close();
+    		 
+    		 NavBar.reFreshCardPanel();
     	 } catch (IOException err) {
     		 System.out.println("Whoops, sad day, we got an error :(");
     		 err.printStackTrace();
@@ -266,5 +271,34 @@ class TaskForm
 	 }
 	 return buffer;
  }
+ 
+	public String createDateString(String year, String month, String day) {
+		// when the user selects the month, it's in Text (i.e. Jan, Feb)
+		// and it needs to be converted into the numerical equivalent 
+		// To do this, search through the months array to find what index it is 
+		
+		// Add 1 to the index to account for starting at 0 
+		int index = Arrays.asList(months).indexOf(month) + 1;
+		// if it's 10 or under, a "0" needs to be added before it to 
+		// have the correct formatting (i.e. 01, 02)
+		String correctMonthFormat;
+		if (index < 10) {
+			correctMonthFormat = "0" + String.valueOf(index);
+		} else {
+			correctMonthFormat = String.valueOf(index);
+		}
+		
+		// if the String day is less than 2, then it means 
+		// it's a single digit, and "0" needs to be added to the String 
+		// in order to have the correct formatting (i.e. 01, 02)
+		if (day.length() < 2) {
+			day = "0" + day;
+		} 
+				
+		// format needed is "YYYY-MM-DD"
+		String dateString = year + "-" + correctMonthFormat + "-" + day;
+		
+		return dateString;
+	}
  
 }

@@ -49,9 +49,7 @@ public class TaskPanel extends JPanel {
 		lblNewLabel.setBounds(75, 52, 61, 16);
 		add(lblNewLabel);
 		this.setVisible(true);
-		
-//		this.add(taskList);		
-		
+				
 	}
 	
 	public JScrollPane TaskList(List<String> taskData) {
@@ -104,4 +102,6 @@ public class TaskPanel extends JPanel {
 			e.printStackTrace();
 		}
 	}
+	
+	
 }
