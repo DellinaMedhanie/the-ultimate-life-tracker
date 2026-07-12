@@ -1,0 +1,4 @@
+
+-4693440 | alice | EXPENSE | 0.0 | Entertainment | BSO concert | 2026-07-12 | 2026-07-12T01:07:21.556384
+
+375916340 | alice | EXPENSE | 10.0 | Education | course | 2026-07-12 | 2026-07-12T01:08:09.183754
