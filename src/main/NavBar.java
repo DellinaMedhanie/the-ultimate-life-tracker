@@ -17,11 +17,11 @@ import javax.swing.border.LineBorder;
 public class NavBar {
 
 	private JFrame frame;	
-	private JPanel cardPanel;
+	private static JPanel cardPanel;
 		
 	private TopBar tBar = new TopBar();
 	private MoodPanel moodTracker = new MoodPanel();
-	private TaskPanel taskTracker = new TaskPanel();
+	private static TaskPanel taskTracker = new TaskPanel();
 	private FinancePanel financeTracker = new FinancePanel(); 
 	private PomodoroPanel pomodoroTimer = new PomodoroPanel();
 	private HomePanel homePage = new HomePanel();
@@ -72,8 +72,8 @@ public class NavBar {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				cardPanel.add(homePage);
-				cardPanel.repaint();
 				cardPanel.revalidate();
+				cardPanel.repaint();
 			}
 		});
 		btnNewButton.setBounds(6, 32, 117, 29);
@@ -84,8 +84,8 @@ public class NavBar {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				cardPanel.add(taskTracker);
-				cardPanel.repaint();
 				cardPanel.revalidate();
+				cardPanel.repaint();
 			}
 		});
 		btnTasks.setBounds(6, 73, 117, 29);
@@ -96,8 +96,8 @@ public class NavBar {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				cardPanel.add(moodTracker);
-				cardPanel.repaint();
 				cardPanel.revalidate();
+				cardPanel.repaint();
 			}
 		});
 		btnNewButton_2.setBounds(6, 114, 117, 29);
@@ -108,8 +108,8 @@ public class NavBar {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				cardPanel.add(financeTracker);
-				cardPanel.repaint();
 				cardPanel.revalidate();	
+				cardPanel.repaint();
 			}
 		});
 		btnNewButton_2_1.setBounds(6, 155, 117, 29);
@@ -120,8 +120,8 @@ public class NavBar {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				cardPanel.add(pomodoroTimer);
-				cardPanel.repaint();
 				cardPanel.revalidate();	
+				cardPanel.repaint();
 			}
 		});
 		btnNewButton_2_1_1.setBounds(6, 196, 117, 29);
@@ -138,7 +138,22 @@ public class NavBar {
 		
 		// on initialization, have homePage be the default
 		cardPanel.add(homePage);
-		cardPanel.repaint();
 		cardPanel.revalidate();
+		cardPanel.repaint();
+	}
+	
+	public static void reFreshCardPanel() {
+		// first remove all Panels to "blank slate" the GUI
+		cardPanel.removeAll();
+		// creates a new taskPanel to trigger a re-read on the task data file 
+		// and update the list to be rendered on the GUI panel
+		taskTracker = new TaskPanel();
+		// add this updated taskTracker to the cardPanel which now includes 
+		// the newly added task
+		cardPanel.add(taskTracker);
+		// this tells the layout manager to recalculate component sizes and positions
+		cardPanel.revalidate(); 
+		// visually redraws component on the screen  
+		cardPanel.repaint(); 
 	}
 }
