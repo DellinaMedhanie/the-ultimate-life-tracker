@@ -107,7 +107,9 @@ public class Transaction {
 	
 	@Override
 	public String toString() {
-		return userId + " | " + getType().toString() + " | " + Double.toString(getAmount()) + " | " + getCategory().toString() + " | " + getDescription();
+		return getTransaction() + " | " + getUserId() + " | " + getType() + 
+				 " | " + getAmount() + " | " + getCategory() + " | " + getDescription() +
+				 " | " + getDate() + " | " + getCreatedAt();
 	}
 }
 

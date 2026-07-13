@@ -134,14 +134,17 @@ public class FinancePanel extends JPanel implements ActionListener {
 	// triggered when someone adds a new transaction
 	// reads the transaction.txt file again to update the list shown 
 	public static void updateTransactionList(String transaction) {
-		listModel.addElement(transaction);
+		// add new transaction to list of entires
+		entries.add(transaction.toString());
+		// update the listModel to account for new entry
+		updateList();
+		// revalidate + repaint to re-render the GUI in the scrollpane
 		transactionList.revalidate(); 
 		transactionList.repaint();
 	}
 	
 	// Allows user to delete any entry they select
 	public void deleteTransaction() {
-		System.out.println("Button was pressed");
 		int index = transactionList.getSelectedIndex();
 
 		if (index == -1 || entries.size() == 0) {
@@ -156,6 +159,33 @@ public class FinancePanel extends JPanel implements ActionListener {
 
 		// removes specific entry from the list of transactions
 		entries.remove(index);
+		// overwrites the transaction file by writing all the other transactions
+		// in the transactions entries to the file
+		writeFile();
+
+		updateList();
+
+		JOptionPane.showMessageDialog(this, "Transaction deleted.");
+	}
+	
+	public void editTransaction() {
+		int index = transactionList.getSelectedIndex();
+
+		if (index == -1 || entries.size() == 0) {
+			JOptionPane.showMessageDialog(this, "Please select an entry to edit.");
+			return;
+		}
+
+		if (transactionList.getSelectedValue().equals("No Entries Yet")) {
+			JOptionPane.showMessageDialog(this, "There are no entries to edit.");
+			return;
+		}
+		
+		String updatedTransaction = "";
+
+		// removes specific entry from the list of transactions
+		entries.set(index, updatedTransaction);
+		
 		// overwrites the transaction file by writing all the other transactions
 		// in the transactions entries to the file
 		writeFile();

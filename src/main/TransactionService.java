@@ -16,17 +16,13 @@ public class TransactionService {
 		String file = "files/" + user + "/transactions.txt";
 		 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));) {
 			 writer.newLine();
-			 writer.write(transactionDetails.getTransaction() + " | " + transactionDetails.getUserId() + " | " + transactionDetails.getType() + 
-					 " | " + transactionDetails.getAmount() + " | " + transactionDetails.getCategory() + " | " + transactionDetails.getDescription() +
-					 " | " + transactionDetails.getDate() + " | " + transactionDetails.getCreatedAt());
+			 writer.write(transactionDetails.toString());
 			 writer.newLine();
 			 writer.close();
 			 
 			// call method in FinancePanel to re-render panel to include the 
 			// newly added transaction data 
-			FinancePanel.updateTransactionList(transactionDetails.getTransaction() + " | " + transactionDetails.getUserId() + " | " + transactionDetails.getType() + 
-					 " | " + transactionDetails.getAmount() + " | " + transactionDetails.getCategory() + " | " + transactionDetails.getDescription() +
-					 " | " + transactionDetails.getDate() + " | " + transactionDetails.getCreatedAt());
+			FinancePanel.updateTransactionList(transactionDetails.toString());
 			 
 		 } catch (IOException err) {
 			 System.out.println("Whoops, sad day, we got an error :(");
@@ -34,14 +30,11 @@ public class TransactionService {
 		 }	
 	}
 	
-	// search for transaction in the file 
-	// overwrite the transaction based on what needs changing
-	public void editTransaction() {} 
+	// NOTE: this is implemented in the FinancePanel for ease of implementation 
+	// can be moved here if needed
+//	public void editTransaction() {} 
 	
-	
-	// search for transaction in the file
-	// delete the transaction from the file 
-	public void deleteTransaction() {}
+//	public void deleteTransaction() {}
 
 
 }
