@@ -22,6 +22,12 @@ public class TransactionService {
 			 writer.newLine();
 			 writer.close();
 			 
+			// call method in FinancePanel to re-render panel to include the 
+			// newly added transaction data 
+			FinancePanel.updateTransactionList(transactionDetails.getTransaction() + " | " + transactionDetails.getUserId() + " | " + transactionDetails.getType() + 
+					 " | " + transactionDetails.getAmount() + " | " + transactionDetails.getCategory() + " | " + transactionDetails.getDescription() +
+					 " | " + transactionDetails.getDate() + " | " + transactionDetails.getCreatedAt());
+			 
 		 } catch (IOException err) {
 			 System.out.println("Whoops, sad day, we got an error :(");
 			 err.printStackTrace();
