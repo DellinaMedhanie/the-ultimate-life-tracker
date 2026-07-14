@@ -120,7 +120,6 @@ public class TasksAtAGlance extends JPanel {
 		int todayDate = Integer.parseInt(splitDate[2]);
 		// type cast date to LocalDate
 		LocalDate today = LocalDate.of(todayYear, todayMonth, todayDate);
-		System.out.println(today);
 		
 		// using insertion sort algorithm to sort the tasks
 		// this should probably change to having the task data be objects 
@@ -149,7 +148,6 @@ public class TasksAtAGlance extends JPanel {
 				// if it's a 0, the due date is today
 				// if it's a positive number, the due date is in the future
 				long days = today.until(due, ChronoUnit.DAYS);
-				System.out.println(days);
 				
 				
 				

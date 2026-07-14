@@ -30,10 +30,14 @@ public class TransactionService {
 		 }	
 	}
 	
+
+	
+	public static void editTransaction(String transactionId, String transactionDetails) {
+		FinancePanel.saveEdits(transactionId, transactionDetails);
+	} 
+	
 	// NOTE: this is implemented in the FinancePanel for ease of implementation 
 	// can be moved here if needed
-//	public void editTransaction() {} 
-	
 //	public void deleteTransaction() {}
 
 

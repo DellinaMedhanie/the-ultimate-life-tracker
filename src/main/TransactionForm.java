@@ -47,7 +47,11 @@ public class TransactionForm extends JFrame implements ActionListener {
 	private JComboBox year;
 	private JButton saveButton;
 	private JButton resetButton;
+	private JButton saveEditsButton;
 
+	// this variable is to keep track of transaction id for editing a transaction
+	private JLabel hiddenLabelTransactionId;
+	
 	// list of days for JComboBox for choosing a date
 	private String dates[]
 	     = { "1", "2", "3", "4", "5",
@@ -93,7 +97,14 @@ public class TransactionForm extends JFrame implements ActionListener {
 	/**
 	 * Create the frame.
 	 */
+	
+	// default constructor that initializes 
+	// with all default values in the form fields 
 	public TransactionForm() {
+		initialize();
+	}
+	
+	public void initialize() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(200, 250, 450, 300);
 		setTitle("Add new transaction");
@@ -227,6 +238,95 @@ public class TransactionForm extends JFrame implements ActionListener {
 
 	}
 	
+	 
+	 // constructor that populates the fields in the form to be the values 
+	 // provided by the existing transaction 
+	 // this is for when the user is trying to edit a transaction
+	 public TransactionForm(String transactionDetails) {
+		 // first initialize the form 
+		 initialize();
+		 
+		 // break the long string into individual values 
+		 // shape of the data 
+		 // transactionID | userId | TYPE | Amount | Category | description | dateOfTransaction | createdAt
+		 // sample shape of data being split is 
+		 // 375916340 | alice | EXPENSE | 10.0 | Education | course | 2026-07-12 | 2026-07-12T01:08:09.183754
+		 String[] values = transactionDetails.split(" | ");
+		 
+		 // data needed to populate form is amount, category, description, and date
+		 String amountValue = values[6];
+		 String categoryValue = values[8];
+		 String descriptionValue = values[10];
+		 
+		 // create a hidden value on the form to be submitted when clicking "save edits" 
+		 // to keep track of the transactionId 
+		 String transactionId = values[0];
+		 hiddenLabelTransactionId = new JLabel(transactionId);
+		 hiddenLabelTransactionId.setVisible(false);
+		 contentPane.add(hiddenLabelTransactionId);
+;		 
+		 // date value needs to be split into year, month, and day
+		 String dateValue = values[12];
+		 String[] splitDate = dateValue.split("-");
+		 String yearValue = splitDate[0];
+		 
+		 // find the index of the year in the years array
+		 int yearIndex = Arrays.asList(years).indexOf(yearValue);
+		 
+		 String monthValue = splitDate[1]; 
+		 // filter through values staring with 0 (i.e. 01, 02, etc.) 
+		 int monthIndex;
+		 if (monthValue.matches("0.")) {
+			 // break string into a substring that removes the 0
+			 String removedZeroFromMonth = monthValue.substring(1, 2);
+			 // type cast value into an int to search in month array 
+			 // subtract 1 to account for month array starting at zero 
+			 monthIndex = Integer.parseInt(removedZeroFromMonth) -1;
+		 } else {
+			 // if the monthValue doesn't start with 0, then it doesn't need to be 
+			 // split into a substring and can type cast value as is
+			 // subtract 1 to account for month array starting at zero 
+			 monthIndex = Integer.parseInt(monthValue) - 1;
+		 } 
+		 
+		 // day needs to be filtered through for values starting with 0 (like month)
+		 String dayValue = splitDate[2];
+		 int dayIndex; 
+		 if (dayValue.matches("0.")) {
+			 // break string into a substring that removes the 0
+			 String removedZeroFromDay = dayValue.substring(1, 2);
+			 // type cast into int to use as index for day array
+			 // subtract 1 to account for day array starting at zero 
+			 dayIndex = Integer.parseInt(removedZeroFromDay) - 1;
+		 } else {
+			 // if the monthValue doesn't start with 0, then it doesn't need to be 
+			 // split into a substring 
+			 // subtract 1 to account for day array starting at zero 
+			 dayIndex = Integer.parseInt(dayValue) - 1;
+		 } 
+		 
+		 // find the index of the categoryValue by searching through categories array
+		 int categoryIndex = categories.indexOf(categoryValue);
+		 
+		 // sets the fields to be the transaction details 
+		 amountTextField.setText(amountValue);
+		 description.setText(descriptionValue);
+		 category.setSelectedIndex(categoryIndex);
+		 
+		 // set year, month, and day based on index from arrays
+		 year.setSelectedIndex(yearIndex);
+		 month.setSelectedIndex(monthIndex);
+		 day.setSelectedIndex(dayIndex);
+		 
+		 // hide the save button for adding a new transaction
+		 contentPane.remove(saveButton);
+		 // and add a new edit save button to handle saving edits to the transaction 
+		 saveEditsButton = new JButton("Save edits");
+		 saveEditsButton.setBounds(85, 237, 117, 29);
+		 saveEditsButton.addActionListener(this);
+		 contentPane.add(saveEditsButton);
+	 }
+	
 	// gets category data from user's categories.txt file 
 	// because user's can have custom categories 
 	
@@ -280,7 +380,7 @@ public class TransactionForm extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {	
 
-		if (e.getSource() == saveButton) {
+		if (e.getSource() == saveButton || e.getSource() == saveEditsButton) {
 			
 			// TODO: figure out userId, just using user text right now
 			String userId = user; 
@@ -299,9 +399,18 @@ public class TransactionForm extends JFrame implements ActionListener {
 			// convert the String into LocalDate data type
 			LocalDate dateData = LocalDate.parse(dateStr);
 			
-			// create new transaction object to then pass into the transaction controller to write the data to the file there
-			Transaction transaction = new Transaction(userId, typeData, amountData, categoryData, descriptionData, dateData); 
-			TransactionService.addTransaction(transaction);
+			if (e.getSource() == saveButton) {				
+				// create new transaction object to then pass into the transaction controller to write the data to the file there
+				Transaction transaction = new Transaction(userId, typeData, amountData, categoryData, descriptionData, dateData); 
+				TransactionService.addTransaction(transaction);
+			} else if (e.getSource() == saveEditsButton) {
+				// don't create a new transaction object, since it would override the transactionId
+				// pass the transactionId separately, and have the other variables chain together in a string
+				String transactionId = hiddenLabelTransactionId.getText();
+				String transactionDetails = userId + " | " + typeData.toString() + " | " + Double.toString(amountData) + " | " + 
+						categoryData + " | " + descriptionData + " | " + dateData + " | " + LocalDate.now().toString();
+				TransactionService.editTransaction(transactionId, transactionDetails);
+			}
 			
 			// clear inputs after saving without closing the frame
 			// in case the user wants to add another transaction

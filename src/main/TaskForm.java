@@ -194,7 +194,7 @@ class TaskForm
      setVisible(true);
      
      findCurrentMonthIndex();
- }
+ } 
 
  // method actionPerformed()
  // to get the action performed

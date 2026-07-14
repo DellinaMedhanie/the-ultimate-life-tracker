@@ -1,4 +1,3 @@
--4693440 | alice | EXPENSE | 0.0 | Entertainment | BSO concert | 2026-07-12 | 2026-07-12T01:07:21.556384
-375916340 | alice | EXPENSE | 10.0 | Education | course | 2026-07-12 | 2026-07-12T01:08:09.183754
-1425082199 | alice | EXPENSE | 45.0 | Shopping | bag | 2026-06-01 | 2026-07-13T17:08:05.743161
--1183080908 | alice | INCOME | 10.0 | Salary |  | 2026-07-13 | 2026-07-13T17:49:51.394600
+712394000 | alice | EXPENSE | 12.95 | Entertainment | movie | 2026-11-13 | 2026-07-13
+-1429163931 | alice | EXPENSE | 30.0 | Food & Dining | take out | 2026-02-01 | 2026-07-13
+2033958584 | alice | INCOME | 0.0 | Freelance | bonus | 2026-04-13 | 2026-07-13

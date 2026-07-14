@@ -23,8 +23,9 @@ public class FinancePanel extends JPanel implements ActionListener {
 
 	static DefaultListModel<String> listModel;
 	static JList<String> transactionList;
-	JScrollPane scrollPane;
-	JButton deleteButton;
+	private JScrollPane scrollPane;
+	private JButton deleteButton;
+	private JButton editButton;
 	
 	static ArrayList<String> entries = new ArrayList<String>();
 
@@ -72,6 +73,11 @@ public class FinancePanel extends JPanel implements ActionListener {
 		deleteButton.addActionListener(this);
 		add(deleteButton);
 		
+		editButton = new JButton("Edit transaction");
+		editButton.setBounds(46, 254, 117, 29);
+		editButton.addActionListener(this);
+		add(editButton);
+		
 		// shows "no entries yet" message if entries list is empty 
 		// otherwise adds entries to the listModel
 		updateList();
@@ -83,6 +89,8 @@ public class FinancePanel extends JPanel implements ActionListener {
 
 		if (e.getSource() == deleteButton) {
 			deleteTransaction();
+		} else if (e.getSource() == editButton) {
+			editTransaction();
 		}
 	}
 	
@@ -181,21 +189,39 @@ public class FinancePanel extends JPanel implements ActionListener {
 			return;
 		}
 		
-		String updatedTransaction = "";
-
-		// removes specific entry from the list of transactions
-		entries.set(index, updatedTransaction);
+		// creates a new Transaction form populated with the fields given in the details String
+		// when form is saved, it calls the TransactionService code that calls the saveEdit() code below
+		TransactionForm form = new TransactionForm(entries.get(index));
+		// need to call this to have the form be visible when it pops up
+		form.setVisible(true);
 		
-		// overwrites the transaction file by writing all the other transactions
-		// in the transactions entries to the file
-		writeFile();
-
-		updateList();
-
-		JOptionPane.showMessageDialog(this, "Transaction deleted.");
 	}
 	
-	public void writeFile() {
+	public static void saveEdits(String transactionId, String transactionDetails) {
+		// search for entries index based on userId of transaction details 
+		
+		for (String transaction : entries) {
+			if (transaction.contains(transactionId)) {
+				int index = entries.indexOf(transaction);
+				// updates specific entry from the list of transactions
+				String fullTransactionDetails = transactionId + " | " + transactionDetails;
+				entries.set(index, fullTransactionDetails);
+			} 
+		}			
+		
+		// overwrites the transaction file by re-writing all transactions including
+		// the updated transaction to the file
+		writeFile();
+
+		// update the listModel to account for new entry
+		updateList();
+		// revalidate + repaint to re-render the GUI in the scrollpane
+		transactionList.revalidate(); 
+		transactionList.repaint();
+
+	}
+	
+	public static void writeFile() {
 		try {
 			FileWriter writer = new FileWriter(filePath);
 
@@ -205,7 +231,6 @@ public class FinancePanel extends JPanel implements ActionListener {
 
 			writer.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "Transaction could not be saved.");
 		}
 	}
 
