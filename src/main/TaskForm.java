@@ -201,9 +201,9 @@ class TaskForm
  // by the user and act accordingly
  public void actionPerformed(ActionEvent e)
  {
-	 // TODO: this needs to change based on who the user is
-	 String user = "alice";
-	 String file = "files/" + user + "/tasks.txt";
+	 // gets signed-in username from CurrentUser 
+	 final String USER = CurrentUser.getUsername();
+	 String file = "files/" + USER + "/tasks.txt";
      if (e.getSource() == sub) {
     	 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));) {
     		 writer.newLine();

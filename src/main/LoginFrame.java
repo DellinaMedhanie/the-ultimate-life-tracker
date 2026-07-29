@@ -425,14 +425,6 @@ class UserService {
 // Holds the username of whoever is currently signed in, so the rest of the
 // app can look up "who am I" after login instead of everything being fixed
 // to one hardcoded user.
-//
-// NOTE FOR THE TEAM: right now, most of the app (TaskPanel, TaskForm,
-// TaskDetail, TasksAtAGlance, FinancePanel, TransactionForm,
-// TransactionService, PomodoroPanel) still has the username "alice"
-// hardcoded directly instead of using this class. Sign-in now correctly
-// identifies who's logged in and stores it here, but wiring every other
-// panel/service to call CurrentUser.getUsername() instead of hardcoding
-// "alice" is a separate follow-up task, not done as part of this feature.
 // ---------------------------------------------------------------------------
 class CurrentUser {
 

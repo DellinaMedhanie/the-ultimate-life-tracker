@@ -85,9 +85,9 @@ public class TaskPanel extends JPanel {
 	
 	
 	public void readTextFile() {
-		// read data from tasks file to find names of tasks
-		String user = "alice";
-		File f = new File("files/" + user + "/tasks.txt");
+		// gets signed-in username from CurrentUser 
+		final String USER = CurrentUser.getUsername();
+		File f = new File("files/" + USER + "/tasks.txt");
 		
 		try (Scanner reader = new Scanner(f)) {
 			while (reader.hasNextLine()) {

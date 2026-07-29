@@ -29,10 +29,9 @@ public class FinancePanel extends JPanel implements ActionListener {
 	
 	static ArrayList<String> entries = new ArrayList<String>();
 
-	// NOTES: this is for testing purposes only and needs to be changed 
-	// to account for which user is logged in
-	static String user = "alice";
-	static String filePath = "files/" + user + "/transactions.txt";
+	// gets signed-in user name from CurrentUser 
+	private static final String USER = CurrentUser.getUsername();
+	static String filePath = "files/" + USER + "/transactions.txt";
 
 	
 	/**

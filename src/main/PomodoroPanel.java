@@ -369,9 +369,8 @@ class PomodoroSession {
 // ---------------------------------------------------------------------------
 class PomodoroService {
 
-	// TODO: this needs to change based on who the user is
-	// hard coded right now for testing purposes, matches the rest of the app
-	private static final String USER = "alice";
+	// gets signed-in username from CurrentUser 
+	private static final String USER = CurrentUser.getUsername();
 
 	/**
 	 * Reads the user's task titles from their tasks file, the same way TaskPanel does,

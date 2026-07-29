@@ -10,7 +10,7 @@ public class HomePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-	private TasksAtAGlance glancePanel = new TasksAtAGlance();
+//	private TasksAtAGlance glancePanel = new TasksAtAGlance();
 
 	/**
 	 * Create the panel.
@@ -29,8 +29,8 @@ public class HomePanel extends JPanel {
 		lblNewLabel_1.setBounds(25, 36, 123, 16);
 		add(lblNewLabel_1);
 		
-		glancePanel.setBounds(25, 62, 345, 232);
-		add(glancePanel);
+//		glancePanel.setBounds(25, 62, 345, 232);
+//		add(glancePanel);
 		
 	}
 

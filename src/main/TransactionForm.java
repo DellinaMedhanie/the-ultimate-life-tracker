@@ -32,6 +32,9 @@ import javax.swing.text.NumberFormatter;
 
 public class TransactionForm extends JFrame implements ActionListener {
 
+	// gets signed-in user name from CurrentUser 
+	private static final String USER = CurrentUser.getUsername();
+	
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	
@@ -330,14 +333,11 @@ public class TransactionForm extends JFrame implements ActionListener {
 	// gets category data from user's categories.txt file 
 	// because user's can have custom categories 
 	
-	// TODO: change hard coded text to link to whatever user 
-	// is currently logged in 
-	
-	// using default, hard-coded text for testing reading user data
-	String user = "alice";
+
 	
 	public void getCategories() {		
-		File f = new File("files/" + user + "/categories.txt");
+		
+		File f = new File("files/" + USER + "/categories.txt");
 				
 		try (Scanner reader = new Scanner(f)) {
 			// skips reading the first line in the file
@@ -383,7 +383,7 @@ public class TransactionForm extends JFrame implements ActionListener {
 		if (e.getSource() == saveButton || e.getSource() == saveEditsButton) {
 			
 			// TODO: figure out userId, just using user text right now
-			String userId = user; 
+			String userId = USER; 
 			double amountData = Double.parseDouble(amountTextField.getValue().toString());
 			String categoryData = category.getSelectedItem().toString();
 			
@@ -466,13 +466,8 @@ public class TransactionForm extends JFrame implements ActionListener {
 	}
 	
 	public Transaction.Type determineType(String categoryName) {
-		// Search through categories.txt file to 
-		
-		// TODO: change to link to dynamically change based on which user is logged in
-		// to search through their custom categories 
-		// it's hard coded right now for testing 
-		
-		File f = new File("files/" + user + "/categories.txt");
+
+		File f = new File("files/" + USER + "/categories.txt");
 		
 		try (Scanner reader = new Scanner(f)) {
 			// skips reading the first line in the file
