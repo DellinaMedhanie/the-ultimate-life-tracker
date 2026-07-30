@@ -88,6 +88,14 @@ public class TaskPanel extends JPanel {
 		// gets signed-in username from CurrentUser 
 		final String USER = CurrentUser.getUsername();
 		File f = new File("files/" + USER + "/tasks.txt");
+
+		try {			
+			if (!f.exists()) {
+				f.createNewFile();
+			}
+		} catch (Exception e) {
+			System.out.println("file could not be created");
+		}
 		
 		try (Scanner reader = new Scanner(f)) {
 			while (reader.hasNextLine()) {
@@ -101,7 +109,8 @@ public class TaskPanel extends JPanel {
 			System.out.println("Error occured");
 			e.printStackTrace();
 		}
+		
+		
 	}
-	
 	
 }

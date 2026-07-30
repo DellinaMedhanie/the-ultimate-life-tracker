@@ -11,9 +11,9 @@ public class TransactionService {
 		// writes transaction details to a transaction file for the user 
 		// TODO: this needs to change based on who the user is
 		// hard coded right now for testing purposes
-		String user = "alice";
+		final String USER = CurrentUser.getUsername();
 		 
-		String file = "files/" + user + "/transactions.txt";
+		String file = "files/" + USER + "/transactions.txt";
 		 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));) {
 			 writer.newLine();
 			 writer.write(transactionDetails.toString());

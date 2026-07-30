@@ -5,8 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -338,8 +341,51 @@ public class TransactionForm extends JFrame implements ActionListener {
 	public void getCategories() {		
 		
 		File f = new File("files/" + USER + "/categories.txt");
-				
+		// if file doesn't exist then create categories file 
+		// and populate with starting category text data 
+		if (!f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
+	            writer.write("CategoryName,Type");
+	            writer.newLine(); 
+	            writer.write("Salary,INCOME");
+	            writer.newLine(); 
+	            writer.write("Freelance,INCOME");
+	            writer.newLine(); 
+	            writer.write("Other Income,INCOME");
+	            writer.newLine(); 
+	            writer.write("Housing,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Food & Dining,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Transport,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Healthcare,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Entertainment,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Shopping,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Education,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Utilities,EXPENSE");
+	            writer.newLine(); 
+	            writer.write("Other Expense,EXPENSE");
+	            writer.newLine(); 
+	            
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		}		
+		
+		
 		try (Scanner reader = new Scanner(f)) {
+			
 			// skips reading the first line in the file
 			// which is header for the file
 			if (reader.hasNextLine()) {
@@ -354,7 +400,7 @@ public class TransactionForm extends JFrame implements ActionListener {
 		} catch (FileNotFoundException e) {
 			System.out.println("Error occured");
 			e.printStackTrace();
-		}
+		} 
 		
 	}
 	

@@ -39,9 +39,9 @@ public class MoodPanel extends JPanel implements ActionListener {
 // Stores user entries
 	ArrayList<String> entries = new ArrayList<String>();
 
-
-	String filePath = "moods.txt";
-
+	private static final String USER = CurrentUser.getUsername();
+	String filePath = "files/" + USER + "/mood.txt";
+	
 
 	public MoodPanel() {
 		this.setBounds(getVisibleRect());
