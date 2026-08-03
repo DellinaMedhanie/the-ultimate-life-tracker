@@ -10,28 +10,39 @@ public class HomePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-//	private TasksAtAGlance glancePanel = new TasksAtAGlance();
-
+	private CurrentUser user; 
+	
+	private TransactionSnapshot transactionSnapshot;
+	
 	/**
 	 * Create the panel.
 	 */
-	public HomePanel() {
+	public HomePanel(CurrentUser user) {
+		// save instance of user locally 
+		this.user = user; 
 		
 		this.setBounds(getVisibleRect());
 		this.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Home");
-		lblNewLabel.setBounds(194, 7, 61, 16);
+		lblNewLabel.setBounds(264, 6, 61, 16);
 		add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("Tasks At a Glance");
-		lblNewLabel_1.setBounds(25, 36, 123, 16);
-		add(lblNewLabel_1);
+		JPanel taskSnapshot = new JPanel();
+		taskSnapshot.setBounds(25, 42, 236, 151);
+		add(taskSnapshot);
 		
-//		glancePanel.setBounds(25, 62, 345, 232);
-//		add(glancePanel);
+		JPanel moodSnapshot = new JPanel();
+		add(moodSnapshot);
+		
+		JPanel pomodoroSnapshot = new JPanel();
+		pomodoroSnapshot.setBounds(284, 216, 236, 151);
+		add(pomodoroSnapshot);
+		
+		transactionSnapshot = new TransactionSnapshot(this.user);
+		add(transactionSnapshot);
+		
 		
 	}
-
 }
