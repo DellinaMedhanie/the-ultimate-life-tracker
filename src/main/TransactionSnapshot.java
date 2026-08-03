@@ -75,6 +75,7 @@ public class TransactionSnapshot extends JPanel {
             	recentTransactions.add(count, cleanLine);
                 count++;
             }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

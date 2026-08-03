@@ -71,6 +71,7 @@ public class PomodoroSnapshot extends JPanel {
             	recentSessions.add(count, line);
                 count++;
             }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
