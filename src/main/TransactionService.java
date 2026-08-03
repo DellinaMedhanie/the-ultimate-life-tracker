@@ -3,6 +3,10 @@ package main;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -16,19 +20,16 @@ public class TransactionService {
 		String username = user.getUsername();
 		// writes transaction details to a transaction file for the user 
 		String file = "files/" + username + "/transactions.txt";
-		 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));) {
-			 writer.newLine();
-			 writer.write(transactionDetails.toString());
-			 writer.newLine();
-			 writer.close();
-			 			// call method in FinancePanel to re-render panel to include the 
-			// newly added transaction data 
-			financePanel.updateTransactionList(user);
-			 
-		 } catch (IOException err) {
-			 System.out.println("Whoops, sad day, we got an error :(");
-			 err.printStackTrace();
-		 }	
+		Path path = Paths.get(file);
+		try {
+			 List<String> lines = Files.readAllLines(path);
+			 lines.add(0, transactionDetails.toString());
+			 Files.write(path, lines);
+			 financePanel.updateTransactionList(user);
+
+		} catch (IOException e) {
+            e.printStackTrace();
+		}
 	}
 	
 
