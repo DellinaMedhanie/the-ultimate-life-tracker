@@ -13,6 +13,7 @@ public class HomePanel extends JPanel {
 	private CurrentUser user; 
 	
 	private TransactionSnapshot transactionSnapshot;
+	private PomodoroSnapshot pomodoroSnapshot;
 	
 	/**
 	 * Create the panel.
@@ -36,8 +37,7 @@ public class HomePanel extends JPanel {
 		JPanel moodSnapshot = new JPanel();
 		add(moodSnapshot);
 		
-		JPanel pomodoroSnapshot = new JPanel();
-		pomodoroSnapshot.setBounds(284, 216, 236, 151);
+		pomodoroSnapshot = new PomodoroSnapshot(this.user);
 		add(pomodoroSnapshot);
 		
 		transactionSnapshot = new TransactionSnapshot(this.user);
