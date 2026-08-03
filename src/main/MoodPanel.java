@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
+import javax.print.attribute.AttributeSet;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,6 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 public class MoodPanel extends JPanel implements ActionListener {
 
@@ -29,12 +34,12 @@ public class MoodPanel extends JPanel implements ActionListener {
 	JTextArea noteBox;
 	JButton saveButton;
 	JButton deleteButton;
+	JLabel selectMoodLabel;
 
 	DefaultListModel<String> listModel;
 	JList<String> moodList;
-
-
 	JLabel trendLabel;
+
 
 // Stores user entries
 	ArrayList<String> entries = new ArrayList<String>();
@@ -42,6 +47,8 @@ public class MoodPanel extends JPanel implements ActionListener {
     // Create a local instance variable (Not static)
     private final CurrentUser user;
 	String filePath;
+	
+	int MAX_NOTE_LENGTH = 200;
 
 	// pass the user data via the constructor 
 	// this is to prevent stale data from previous logged in users 
@@ -94,6 +101,10 @@ public class MoodPanel extends JPanel implements ActionListener {
 		noteBox = new JTextArea();
 		noteBox.setLineWrap(true);
 		noteBox.setWrapStyleWord(true);
+		
+	    // Apply the DocumentFilter to the JTextArea's document
+        AbstractDocument doc = (AbstractDocument) noteBox.getDocument();
+        doc.setDocumentFilter(new DocumentSizeFilter(MAX_NOTE_LENGTH));
 
 		JScrollPane noteScroll = new JScrollPane(noteBox);
 		noteScroll.setBounds(100, 95, 260, 60);
@@ -129,6 +140,13 @@ public class MoodPanel extends JPanel implements ActionListener {
 		trendLabel = new JLabel("Trend Summary: No entries yet");
 		trendLabel.setBounds(360, 260, 180, 25);
 		add(trendLabel);
+		
+		// have label shown if save button is disabled to prompt
+		// user to select a mood
+		// label greys out if the save button is enabled 
+		selectMoodLabel = new JLabel("Select a mood");
+		selectMoodLabel.setBounds(379, 140, 118, 16);
+		add(selectMoodLabel);
 
 		updateList();
 		updateTrend();
@@ -139,8 +157,10 @@ public class MoodPanel extends JPanel implements ActionListener {
 		if (e.getSource() == moodBox) {
 			if (moodBox.getSelectedIndex() > 0) {
 				saveButton.setEnabled(true);
+				selectMoodLabel.setVisible(false);
 			} else {
 				saveButton.setEnabled(false);
+				selectMoodLabel.setVisible(true);
 			}
 		}
 
@@ -166,7 +186,7 @@ public class MoodPanel extends JPanel implements ActionListener {
 // All the information saved when an entry is recorded
 		String entry = LocalDateTime.now() + " | " + mood + " | Note: " + note;
 
-		entries.add(entry);
+		entries.add(0, entry);
 		writeFile();
 
 // Clears the form after entry is saved
@@ -277,4 +297,5 @@ public class MoodPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Mood could not be saved.");
 		}
 	}
+	
 }
