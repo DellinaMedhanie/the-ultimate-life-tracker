@@ -72,11 +72,16 @@ public class PomodoroPanel extends JPanel {
 	private JButton endEarlyButton;
 	private JCheckBox muteCheckbox;
 	private DefaultListModel<String> logModel;
+	
+    private final CurrentUser user;
 
 	/**
 	 * Create the panel.
 	 */
-	public PomodoroPanel() {
+	public PomodoroPanel(CurrentUser user) {
+		this.user = user; 
+		String name = this.user.getUsername();
+		
 		this.setLayout(null);
 		this.setBounds(getVisibleRect());
 		this.setBorder(new LineBorder(new Color(0, 0, 0), 2));
@@ -101,7 +106,7 @@ public class PomodoroPanel extends JPanel {
 
 		taskCombo = new JComboBox<>();
 		taskCombo.addItem("No task specified");
-		for (String taskTitle : PomodoroService.getTaskTitles()) {
+		for (String taskTitle : PomodoroService.getTaskTitles(name)) {
 			taskCombo.addItem(taskTitle);
 		}
 		taskCombo.setBounds(125, 130, 250, 24);
@@ -158,7 +163,7 @@ public class PomodoroPanel extends JPanel {
 		this.add(logLabel);
 
 		logModel = new DefaultListModel<>();
-		for (String entry : PomodoroService.getLog()) {
+		for (String entry : PomodoroService.getLog(name)) {
 			logModel.addElement(entry);
 		}
 		JList<String> logList = new JList<>(logModel);
@@ -288,7 +293,7 @@ public class PomodoroPanel extends JPanel {
 		String task = (String) taskCombo.getSelectedItem();
 		double minutes = elapsedSeconds / 60.0;
 		PomodoroSession session = new PomodoroSession(task, minutes, LocalDateTime.now());
-		PomodoroService.logSession(session);
+		PomodoroService.logSession(session, this.user.getUsername());
 		logModel.addElement(session.toString());
 	}
 
@@ -369,16 +374,14 @@ class PomodoroSession {
 // ---------------------------------------------------------------------------
 class PomodoroService {
 
-	// gets signed-in username from CurrentUser 
-	private static final String USER = CurrentUser.getUsername();
-
 	/**
 	 * Reads the user's task titles from their tasks file, the same way TaskPanel does,
 	 * so the Pomodoro timer can offer them as a "focus on this task" option.
+	 * Username will come from Panel which creates instance of CurrentUser.
 	 */
-	public static List<String> getTaskTitles() {
+	public static List<String> getTaskTitles(String username) {
 		List<String> tasks = new ArrayList<>();
-		File f = new File("files/" + USER + "/tasks.txt");
+		File f = new File("files/" + username + "/tasks.txt");
 
 		try (Scanner reader = new Scanner(f)) {
 			while (reader.hasNextLine()) {
@@ -391,7 +394,7 @@ class PomodoroService {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("No tasks file found for " + USER);
+			System.out.println("No tasks file found for " + username);
 		}
 
 		return tasks;
@@ -401,14 +404,15 @@ class PomodoroService {
 	 * Appends a completed focus session to the Pomodoro log file for the user.
 	 * The log tracks how long was spent, when it was logged, and what task (if any)
 	 * it was spent on.
+	 * Username will come from Panel which creates instance of CurrentUser.
 	 */
-	public static void logSession(PomodoroSession session) {
-		File dir = new File("files/" + USER);
+	public static void logSession(PomodoroSession session, String username) {
+		File dir = new File("files/" + username);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
 
-		String file = "files/" + USER + "/pomodoro_log.txt";
+		String file = "files/" + username + "/pomodoro_log.txt";
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
 			writer.write(session.toString());
 			writer.newLine();
@@ -420,10 +424,11 @@ class PomodoroService {
 
 	/**
 	 * Reads back the full Pomodoro log so it can be displayed to the user.
+	 * Username will come from Panel which creates instance of CurrentUser.
 	 */
-	public static List<String> getLog() {
+	public static List<String> getLog(String username) {
 		List<String> entries = new ArrayList<>();
-		File f = new File("files/" + USER + "/pomodoro_log.txt");
+		File f = new File("files/" + username + "/pomodoro_log.txt");
 
 		try (Scanner reader = new Scanner(f)) {
 			while (reader.hasNextLine()) {

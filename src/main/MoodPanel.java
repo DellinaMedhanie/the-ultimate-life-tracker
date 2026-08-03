@@ -39,18 +39,24 @@ public class MoodPanel extends JPanel implements ActionListener {
 // Stores user entries
 	ArrayList<String> entries = new ArrayList<String>();
 
-	private static final String USER = CurrentUser.getUsername();
-	String filePath = "files/" + USER + "/mood.txt";
-	
+    // Create a local instance variable (Not static)
+    private final CurrentUser user;
+	String filePath;
 
-	public MoodPanel() {
+	// pass the user data via the constructor 
+	// this is to prevent stale data from previous logged in users 
+	public MoodPanel(CurrentUser user) {
+		// save variable locally 
+		this.user = user; 
+		// 
+		String name = this.user.getUsername();
+		filePath = "files/" + name + "/mood.txt"; 		
 		this.setBounds(getVisibleRect());
 		this.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		this.setLayout(null);
 
 
 		createFile();
-
 		readFile();
 
 

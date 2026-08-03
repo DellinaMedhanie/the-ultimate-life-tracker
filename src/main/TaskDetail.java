@@ -11,33 +11,20 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-public class TaskDetail {
+public class TaskDetail extends JFrame {
 	
 	List<String> taskDetails = new ArrayList<>();
 
 	private JFrame frame;
 	private static String taskName = " ";
+	private final CurrentUser user;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					TaskDetail window = new TaskDetail(taskName);
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the application.
 	 */
-	public TaskDetail(String value) {
+	public TaskDetail(String value, CurrentUser user) {
+		this.user = user;
 		setTaskName(value);
 		initialize();
 	}
@@ -48,9 +35,11 @@ public class TaskDetail {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// don't use setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// otherwise it will close both the detail frame and the main window frame
 		frame.setTitle("Task detail for " + getTaskName());
 		frame.setResizable(false);
+		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(new Color(0, 150, 150));
 		frame.getContentPane().setLayout(null);
@@ -114,8 +103,8 @@ public class TaskDetail {
 	
 	public void readTextFile() {
 		// read data from tasks file to find names of tasks
-		String user = "alice";
-		File f = new File("files/" + user + "/tasks.txt");
+		String name = this.user.getUsername();
+		File f = new File("files/" + name + "/tasks.txt");
 		Boolean foundTask = false; 
 		
 		try (Scanner reader = new Scanner(f)) {

@@ -72,10 +72,14 @@ class TaskForm
  private String priority[] 
 	= {"Low", "Medium", "High", "Critical"};
 
+ private final CurrentUser user;
+ 
  // constructor, to initialize the components
  // with default values.
- public TaskForm()
+ public TaskForm(CurrentUser user)
  {
+	 this.user = user; 
+	 
      setTitle("Add a Task");
      setBounds(300, 90, 600, 600);
      setResizable(false);
@@ -202,8 +206,8 @@ class TaskForm
  public void actionPerformed(ActionEvent e)
  {
 	 // gets signed-in username from CurrentUser 
-	 final String USER = CurrentUser.getUsername();
-	 String file = "files/" + USER + "/tasks.txt";
+	 String name = this.user.getUsername();
+	 String file = "files/" + name + "/tasks.txt";
      if (e.getSource() == sub) {
     	 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));) {
     		 writer.newLine();
@@ -227,7 +231,8 @@ class TaskForm
     		 writer.newLine(); 
     		 writer.close();
     		 
-    		 NavBar.reFreshCardPanel();
+    		 NavBar navBar = new NavBar(this.user);
+			 navBar.reFreshCardPanel();
     	 } catch (IOException err) {
     		 System.out.println("Whoops, sad day, we got an error :(");
     		 err.printStackTrace();

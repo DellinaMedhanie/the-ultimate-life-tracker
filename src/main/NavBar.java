@@ -14,46 +14,35 @@ import java.awt.CardLayout;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-public class NavBar {
+public class NavBar extends JFrame {
 
 	private JFrame frame;	
 	private static JPanel cardPanel;
 		
-	private TopBar tBar = new TopBar();
-	private MoodPanel moodTracker = new MoodPanel();
-	private static TaskPanel taskTracker = new TaskPanel();
-	private FinancePanel financeTracker = new FinancePanel(); 
-	private PomodoroPanel pomodoroTimer = new PomodoroPanel();
-	private HomePanel homePage = new HomePanel();
+	private TopBar tBar;
+	private MoodPanel moodTracker;
+	private static TaskPanel taskTracker;
+	private FinancePanel financeTracker; 
+	private PomodoroPanel pomodoroTimer;
+	private HomePanel homePage;
 	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					NavBar window = new NavBar();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private final CurrentUser user; 
 
 	/**
 	 * Create the application.
 	 */
-	public NavBar() {
+	public NavBar(CurrentUser userObj) {
+		this.user =  userObj;
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() {		
+		
 		frame = new JFrame();
+		frame.setVisible(true);
 		frame.setSize(700, 600);
 		frame.setTitle("Life Management System");
 		frame.setResizable(false);
@@ -61,6 +50,13 @@ public class NavBar {
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setBackground(new Color(0, 100, 100));
+
+		tBar = new TopBar(); 
+		moodTracker = new MoodPanel(this.user); 
+		taskTracker = new TaskPanel(this.user); 
+		financeTracker = new FinancePanel(this.user); 
+		pomodoroTimer = new PomodoroPanel(this.user); 
+		homePage = new HomePanel(); 
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(17, 51, 124, 438);
@@ -127,6 +123,18 @@ public class NavBar {
 		btnNewButton_2_1_1.setBounds(6, 196, 117, 29);
 		panel.add(btnNewButton_2_1_1);
 		
+		JButton logOut = new JButton("Log out");
+		logOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// close this window/frame 
+				frame.dispose();
+				// calls fresh login screen via main
+				new Main().main(new String [0]);
+			}
+		});
+		logOut.setBounds(6, 403, 117, 29);
+		panel.add(logOut);
+		
 		frame.getContentPane().add(tBar);
 
 		
@@ -142,12 +150,12 @@ public class NavBar {
 		cardPanel.repaint();
 	}
 	
-	public static void reFreshCardPanel() {
+	public void reFreshCardPanel() {
 		// first remove all Panels to "blank slate" the GUI
 		cardPanel.removeAll();
 		// creates a new taskPanel to trigger a re-read on the task data file 
 		// and update the list to be rendered on the GUI panel
-		taskTracker = new TaskPanel();
+		taskTracker = new TaskPanel(this.user);
 		// add this updated taskTracker to the cardPanel which now includes 
 		// the newly added task
 		cardPanel.add(taskTracker);
@@ -156,4 +164,9 @@ public class NavBar {
 		// visually redraws component on the screen  
 		cardPanel.repaint(); 
 	}
+	
+    // Allows other files to access the window
+    public JFrame getFrame() {
+        return this.frame;
+    }
 }

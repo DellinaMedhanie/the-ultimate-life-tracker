@@ -24,8 +24,11 @@ public class TaskPanel extends JPanel {
 	List<String> taskData = new ArrayList<>();
 	List<String> tasks = new ArrayList<>();
 	
+	private final CurrentUser user;
 	
-	public TaskPanel() {
+	public TaskPanel(CurrentUser user) {
+		// save variable locally 
+		this.user = user;
 		
 		readTextFile();
 		
@@ -37,7 +40,8 @@ public class TaskPanel extends JPanel {
 		label.setText("Task Tracker");
 		label.setBounds(217, 20, 99, 20);
 		
-		Button taskButton = new Button("Add a task", "add task");
+		// need to pass user object to button to reference and save signed-in user's data
+		Button taskButton = new Button("Add a task", "add task", this.user);
 		Dimension buttonSize = taskButton.getPreferredSize();
 		taskButton.setBounds(362, 34, buttonSize.width, buttonSize.height);		
 		
@@ -69,9 +73,7 @@ public class TaskPanel extends JPanel {
 					String selectedValue = sourceList.getSelectedValue();
 					
 					if (selectedValue != null) {
-						System.out.println(selectedValue);
-						TaskDetail detailView = new TaskDetail(selectedValue);
-						detailView.main(null);
+						TaskDetail detailView = new TaskDetail(selectedValue, TaskPanel.this.user);
 					}
 				}
 			}
@@ -86,8 +88,10 @@ public class TaskPanel extends JPanel {
 	
 	public void readTextFile() {
 		// gets signed-in username from CurrentUser 
-		final String USER = CurrentUser.getUsername();
-		File f = new File("files/" + USER + "/tasks.txt");
+		// from the local instance of CurrentUser 
+		String name = this.user.getUsername();
+		System.out.println(name);
+		File f = new File("files/" + name + "/tasks.txt");
 
 		try {			
 			if (!f.exists()) {

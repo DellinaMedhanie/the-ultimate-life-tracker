@@ -118,12 +118,14 @@ public class LoginFrame extends JFrame implements ActionListener {
 			}
 
 			if (UserService.authenticate(username, password)) {
+				CurrentUser currentUser = new CurrentUser();
 				//remember who's logged in so the rest of the app can reference it later
-				CurrentUser.setUsername(username);
+				currentUser.setUsername(username);
 
 				//close this window and open the main app
 				this.dispose();
-				NavBar.main(null);
+				// note: do NOT call NavBar.main
+				NavBar newNavBar = new NavBar(currentUser);
 			} else {
 				errorLabel.setText("Incorrect username or password.");
 				tpass.setText("");
@@ -143,7 +145,7 @@ public class LoginFrame extends JFrame implements ActionListener {
 class AccountForm
 //Account form is a JFrame (a ready-made window class that Java/Swing provides — it already knows how to be a window (have a title bar, be resizable, show up on screen, etc.)
  extends JFrame
- //Allows for users clicking button to create an account to actually work (this line delares that I will code this button later on)...
+ //Allows for users clicking button to create an account to actually work (this line declares that I will code this button later on)...
  //Note to self: extends (get an included behavior from JFrame) and implements (promise to add specific behavior yourself)
  implements ActionListener {
 
@@ -428,17 +430,20 @@ class UserService {
 // ---------------------------------------------------------------------------
 class CurrentUser {
 
-	private static String username;
+	// removed static keyword to avoid global static state for session management.
+	// Instead pass the user instance or session down to the classes/panels that need it
+	// This prevents stale data from persisting when a user logs out
+	private String username;
 
-	public static void setUsername(String name) {
+	public void setUsername(String name) {
 		username = name;
 	}
 
-	public static String getUsername() {
+	public String getUsername() {
 		return username;
 	}
 
-	public static boolean isLoggedIn() {
+	public boolean isLoggedIn() {
 		return username != null;
 	}
 }
