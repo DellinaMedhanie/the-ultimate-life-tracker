@@ -36,7 +36,10 @@ import javax.swing.text.NumberFormatter;
 public class TransactionForm extends JFrame implements ActionListener {
 
 	// gets signed-in user name from CurrentUser 
-	private static final String USER = CurrentUser.getUsername();
+    private final CurrentUser user;
+    
+    // save a private instance of the financePanel that is passed in 
+    private FinancePanel financePanel;
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -83,22 +86,6 @@ public class TransactionForm extends JFrame implements ActionListener {
 	    	"2034", "2035", "2036", "2037"};
 	
 	private ArrayList<String> categories = new ArrayList<>();
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					TransactionForm frame = new TransactionForm();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
@@ -106,7 +93,10 @@ public class TransactionForm extends JFrame implements ActionListener {
 	
 	// default constructor that initializes 
 	// with all default values in the form fields 
-	public TransactionForm() {
+	public TransactionForm(CurrentUser user, FinancePanel financePanel) {
+		 // save passed in data locally
+		this.user = user;
+		this.financePanel = financePanel;
 		initialize();
 	}
 	
@@ -248,7 +238,10 @@ public class TransactionForm extends JFrame implements ActionListener {
 	 // constructor that populates the fields in the form to be the values 
 	 // provided by the existing transaction 
 	 // this is for when the user is trying to edit a transaction
-	 public TransactionForm(String transactionDetails) {
+	 public TransactionForm(CurrentUser user, String transactionDetails, FinancePanel financePanel) {
+		 // save passed in data locally
+		 this.user = user;
+		 this.financePanel = financePanel;
 		 // first initialize the form 
 		 initialize();
 		 
@@ -257,12 +250,13 @@ public class TransactionForm extends JFrame implements ActionListener {
 		 // transactionID | userId | TYPE | Amount | Category | description | dateOfTransaction | createdAt
 		 // sample shape of data being split is 
 		 // 375916340 | alice | EXPENSE | 10.0 | Education | course | 2026-07-12 | 2026-07-12T01:08:09.183754
-		 String[] values = transactionDetails.split(" | ");
-		 
+		 String[] values = transactionDetails.split(" \\| ");
+		 // it's split by the pipe symbol, so the shape of the data becomes 
+		 // transactionID userID TYPE Amount Category description dateOfTransaction createdAt
 		 // data needed to populate form is amount, category, description, and date
-		 String amountValue = values[6];
-		 String categoryValue = values[8];
-		 String descriptionValue = values[10];
+		 String amountValue = values[3];
+		 String categoryValue = values[4];
+		 String descriptionValue = values[5];
 		 
 		 // create a hidden value on the form to be submitted when clicking "save edits" 
 		 // to keep track of the transactionId 
@@ -272,13 +266,12 @@ public class TransactionForm extends JFrame implements ActionListener {
 		 contentPane.add(hiddenLabelTransactionId);
 ;		 
 		 // date value needs to be split into year, month, and day
-		 String dateValue = values[12];
+		 String dateValue = values[6];
 		 String[] splitDate = dateValue.split("-");
 		 String yearValue = splitDate[0];
 		 
 		 // find the index of the year in the years array
 		 int yearIndex = Arrays.asList(years).indexOf(yearValue);
-		 
 		 String monthValue = splitDate[1]; 
 		 // filter through values staring with 0 (i.e. 01, 02, etc.) 
 		 int monthIndex;
@@ -338,9 +331,10 @@ public class TransactionForm extends JFrame implements ActionListener {
 	
 
 	
-	public void getCategories() {		
+	public void getCategories() {	
+		String name = this.user.getUsername();
 		
-		File f = new File("files/" + USER + "/categories.txt");
+		File f = new File("files/" + name + "/categories.txt");
 		// if file doesn't exist then create categories file 
 		// and populate with starting category text data 
 		if (!f.exists()) {
@@ -419,6 +413,8 @@ public class TransactionForm extends JFrame implements ActionListener {
 		 int buffer = dateNum - 2026;
 		 // years only account for before 2037
 		 if (dateNum > 2037) {
+			 // show a dialog message that program only supports up to the year 2037
+			 JOptionPane.showMessageDialog(this, "This program only supports up to the year 2037");
 			 return 0;
 		 }
 		 return buffer;
@@ -428,8 +424,8 @@ public class TransactionForm extends JFrame implements ActionListener {
 
 		if (e.getSource() == saveButton || e.getSource() == saveEditsButton) {
 			
-			// TODO: figure out userId, just using user text right now
-			String userId = USER; 
+			// TODO: figure out userId, just using username right now
+			String userId = this.user.getUsername(); 
 			double amountData = Double.parseDouble(amountTextField.getValue().toString());
 			String categoryData = category.getSelectedItem().toString();
 			
@@ -448,22 +444,27 @@ public class TransactionForm extends JFrame implements ActionListener {
 			if (e.getSource() == saveButton) {				
 				// create new transaction object to then pass into the transaction controller to write the data to the file there
 				Transaction transaction = new Transaction(userId, typeData, amountData, categoryData, descriptionData, dateData); 
-				TransactionService.addTransaction(transaction);
+				TransactionService transactionService = new TransactionService();
+				// pass in locally financePanel that was passed into the TransactionForm to TransactionService 
+				// to be able to access the correct instance of the financePanel
+				// to update the transaction data 
+				transactionService.addTransaction(transaction, this.user, this.financePanel);
 			} else if (e.getSource() == saveEditsButton) {
 				// don't create a new transaction object, since it would override the transactionId
 				// pass the transactionId separately, and have the other variables chain together in a string
 				String transactionId = hiddenLabelTransactionId.getText();
 				String transactionDetails = userId + " | " + typeData.toString() + " | " + Double.toString(amountData) + " | " + 
 						categoryData + " | " + descriptionData + " | " + dateData + " | " + LocalDate.now().toString();
-				TransactionService.editTransaction(transactionId, transactionDetails);
+				TransactionService transactionService2 = new TransactionService();
+				// pass in locally financePanel that was passed into the TransactionForm to TransactionService 
+				// to be able to access the correct instance of the financePanel
+				// to update the transaction data 
+				transactionService2.editTransaction(transactionId, transactionDetails, this.user, this.financePanel);
 			}
 			
 			// clear inputs after saving without closing the frame
 			// in case the user wants to add another transaction
 			resetForm();
-
-			// show message to user to give feedback that the transaction was saved
-			JOptionPane.showMessageDialog(this, "Transaction saved.");
 
 		
 		} else if (e.getSource() == resetButton) {
@@ -513,7 +514,7 @@ public class TransactionForm extends JFrame implements ActionListener {
 	
 	public Transaction.Type determineType(String categoryName) {
 
-		File f = new File("files/" + USER + "/categories.txt");
+		File f = new File("files/" + this.user.getUsername() + "/categories.txt");
 		
 		try (Scanner reader = new Scanner(f)) {
 			// skips reading the first line in the file

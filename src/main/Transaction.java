@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 // Model layer
 public class Transaction {
 	/*
-	 * transaction: String (UUID) -> Unique identifier auto-generated on creation
+	 * transaction: String -> Unique identifier auto-generated on creation
 	 * userId: String -> Links the transaction to the authenticated user 
 	 * type: Enum (INCOME/EXPENSE) -> Whether this is money received or money spent 
 	 * amount: double -> Monetary value - always positive; type determines direction 
