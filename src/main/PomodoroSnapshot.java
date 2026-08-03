@@ -37,7 +37,7 @@ public class PomodoroSnapshot extends JPanel {
 		recentSessions.add("");
 		recentSessions.add("");
 		
-		readTransactionFile(); 
+		readPomodoroLogFile(); 
 		
 		// pomodoro session data 1
 		String p1 = recentSessions.get(0); 
@@ -59,7 +59,7 @@ public class PomodoroSnapshot extends JPanel {
 		add(session3);
 	}
 
-	public void readTransactionFile() {
+	public void readPomodoroLogFile() {
 		String name = this.user.getUsername();
 		filePath = "files/" + name + "/pomodoro_log.txt";
 		
