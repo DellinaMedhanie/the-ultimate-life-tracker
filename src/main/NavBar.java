@@ -56,7 +56,7 @@ public class NavBar extends JFrame {
 		taskTracker = new TaskPanel(this.user); 
 		financeTracker = new FinancePanel(this.user); 
 		pomodoroTimer = new PomodoroPanel(this.user); 
-		homePage = new HomePanel(); 
+		homePage = new HomePanel(this.user); 
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(17, 51, 124, 438);

@@ -3,6 +3,7 @@ package main;
 import javax.swing.JPanel;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class PomodoroSnapshot extends JPanel {
 		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Recent Pomodoro Sessions");
-		lblNewLabel.setBounds(22, 6, 180, 16);
+		lblNewLabel.setBounds(22, 6, 220, 16);
 		add(lblNewLabel);
 
 		
@@ -62,8 +63,16 @@ public class PomodoroSnapshot extends JPanel {
 	public void readPomodoroLogFile() {
 		String name = this.user.getUsername();
 		filePath = "files/" + name + "/pomodoro_log.txt";
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+		// a brand-new user simply won't have a pomodoro log yet; that's an
+		// expected state, not an error, so don't attempt the read (and don't
+		// log a scary stack trace) unless the file actually exists
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return;
+		}
+
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int count = 0;
             

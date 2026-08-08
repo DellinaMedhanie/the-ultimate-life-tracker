@@ -35,7 +35,7 @@ public class TasksAtAGlance extends JPanel {
 		System.out.println(tasks);
 		
 		// quick button addTask()
-		Button taskButton = new Button("Add a task", "add task");
+		Button taskButton = new Button("Add a task", "add task", null);
 		taskButton.setBounds(191, 6, 111, 29);
 		
 		this.add(taskButton);
