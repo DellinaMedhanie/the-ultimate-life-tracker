@@ -2,6 +2,8 @@ package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -11,18 +13,23 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 
-public class TaskPanel extends JPanel {
+public class TaskPanel extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private JButton taskButton;
+	
 	List<String> taskData = new ArrayList<>();
 	List<String> tasks = new ArrayList<>();
+	
+	private JScrollPane taskList;
 	
 	private final CurrentUser user;
 	
@@ -41,19 +48,32 @@ public class TaskPanel extends JPanel {
 		label.setBounds(217, 20, 99, 20);
 		
 		// need to pass user object to button to reference and save signed-in user's data
-		Button taskButton = new Button("Add a task", "add task", this.user);
+		taskButton = new JButton();
+		taskButton.setText("Add task");
+		taskButton.addActionListener(this);
+				
 		Dimension buttonSize = taskButton.getPreferredSize();
 		taskButton.setBounds(362, 34, buttonSize.width, buttonSize.height);		
 		
+		taskList = TaskList(tasks);
+		
 		this.add(label);
 		this.add(taskButton);
-		this.add(TaskList(tasks));
+		this.add(taskList);
 		
 		JLabel lblNewLabel = new JLabel("All tasks");
 		lblNewLabel.setBounds(75, 52, 61, 16);
 		add(lblNewLabel);
 		this.setVisible(true);
 				
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == taskButton) {
+			// need to pass in TaskPanel instance to be able to reference from TaskForm
+			// to be able to update the UI in this taskPanel
+			TaskForm form = new TaskForm(this.user, this);
+		} 
 	}
 	
 	public JScrollPane TaskList(List<String> taskData) {
@@ -113,8 +133,20 @@ public class TaskPanel extends JPanel {
 			System.out.println("Error occured");
 			e.printStackTrace();
 		}
-		
-		
+	}
+	
+	public void refreshUI() {
+		// need to remove the TaskList from the UI
+		this.remove(taskList);
+		// remove all tasks in the locally saved ArrayList
+		tasks.clear();
+		// read the tasks.txt to refresh the task ArrayList
+		readTextFile();
+		// re-add the updated task list with the fresh data
+		taskList = TaskList(tasks);
+		this.add(taskList);
+		this.revalidate();
+		this.repaint();
 	}
 	
 }

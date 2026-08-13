@@ -23,6 +23,8 @@ import java.util.Scanner;
 class TaskForm
  extends JFrame
  implements ActionListener {
+	
+	private TaskPanel tPanel;
 
  // Components of the Form
  private Container c;
@@ -76,9 +78,12 @@ class TaskForm
  
  // constructor, to initialize the components
  // with default values.
- public TaskForm(CurrentUser user)
+ // need to pass in TaskPanel to save locally to be able 
+ // to refresh the UI
+ public TaskForm(CurrentUser user, TaskPanel tPanel)
  {
 	 this.user = user; 
+	 this.tPanel = tPanel;
 	 
      setTitle("Add a Task");
      setBounds(300, 90, 600, 600);
@@ -231,8 +236,8 @@ class TaskForm
     		 writer.newLine(); 
     		 writer.close();
     		 
-    		 NavBar navBar = new NavBar(this.user);
-			 navBar.reFreshCardPanel();
+    		 // refresh data on the TaskPanel
+    		 tPanel.refreshUI();
     	 } catch (IOException err) {
     		 System.out.println("Whoops, sad day, we got an error :(");
     		 err.printStackTrace();
