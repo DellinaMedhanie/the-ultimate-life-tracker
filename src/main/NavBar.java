@@ -53,12 +53,7 @@ public class NavBar extends JFrame {
 		frame.getContentPane().setBackground(new Color(0, 100, 100));
 
 		tBar = new TopBar(); 
-		moodTracker = new MoodPanel(this.user); 
-		taskTracker = new TaskPanel(this.user); 
-		financeTracker = new FinancePanel(this.user); 
-		pomodoroTimer = new PomodoroPanel(this.user); 
-		homePage = new HomePanel(this.user); 
-		budgetTracker = new BudgetPanel(this.user); 
+		homePage = new HomePanel(user); 
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(17, 51, 124, 438);
@@ -69,6 +64,9 @@ public class NavBar extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				homePage = new HomePanel(user); 
 				cardPanel.add(homePage);
 				cardPanel.revalidate();
 				cardPanel.repaint();
@@ -81,6 +79,9 @@ public class NavBar extends JFrame {
 		btnTasks.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				taskTracker = new TaskPanel(user); 
 				cardPanel.add(taskTracker);
 				cardPanel.revalidate();
 				cardPanel.repaint();
@@ -93,6 +94,9 @@ public class NavBar extends JFrame {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				moodTracker = new MoodPanel(user); 
 				cardPanel.add(moodTracker);
 				cardPanel.revalidate();
 				cardPanel.repaint();
@@ -105,6 +109,9 @@ public class NavBar extends JFrame {
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				financeTracker = new FinancePanel(user); 
 				cardPanel.add(financeTracker);
 				cardPanel.revalidate();	
 				cardPanel.repaint();
@@ -117,6 +124,9 @@ public class NavBar extends JFrame {
 		btnNewButton_2_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				pomodoroTimer = new PomodoroPanel(user); 
 				cardPanel.add(pomodoroTimer);
 				cardPanel.revalidate();	
 				cardPanel.repaint();
@@ -129,6 +139,7 @@ public class NavBar extends JFrame {
 		btnBudget.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
+				budgetTracker = new BudgetPanel(user); 
 				cardPanel.add(budgetTracker);
 				cardPanel.revalidate();	
 				cardPanel.repaint();
