@@ -25,6 +25,7 @@ public class NavBar extends JFrame {
 	private FinancePanel financeTracker; 
 	private PomodoroPanel pomodoroTimer;
 	private HomePanel homePage;
+	private BudgetPanel budgetTracker;
 	
 	private final CurrentUser user; 
 
@@ -57,6 +58,7 @@ public class NavBar extends JFrame {
 		financeTracker = new FinancePanel(this.user); 
 		pomodoroTimer = new PomodoroPanel(this.user); 
 		homePage = new HomePanel(this.user); 
+		budgetTracker = new BudgetPanel(this.user); 
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(17, 51, 124, 438);
@@ -123,6 +125,18 @@ public class NavBar extends JFrame {
 		btnNewButton_2_1_1.setBounds(6, 196, 117, 29);
 		panel.add(btnNewButton_2_1_1);
 		
+		JButton btnBudget = new JButton("Budget");
+		btnBudget.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cardPanel.removeAll();
+				cardPanel.add(budgetTracker);
+				cardPanel.revalidate();	
+				cardPanel.repaint();
+			}
+		});
+		btnBudget.setBounds(6, 237, 117, 29);
+		panel.add(btnBudget);
+		
 		JButton logOut = new JButton("Log out");
 		logOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -169,4 +183,4 @@ public class NavBar extends JFrame {
     public JFrame getFrame() {
         return this.frame;
     }
-} 
+}
