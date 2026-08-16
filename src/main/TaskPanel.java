@@ -93,7 +93,7 @@ public class TaskPanel extends JPanel implements ActionListener {
 					String selectedValue = sourceList.getSelectedValue();
 					
 					if (selectedValue != null) {
-						TaskDetail detailView = new TaskDetail(selectedValue, TaskPanel.this.user);
+						TaskDetail detailView = new TaskDetail(selectedValue, TaskPanel.this.user, TaskPanel.this);
 					}
 				}
 			}
@@ -126,7 +126,25 @@ public class TaskPanel extends JPanel implements ActionListener {
 				String data = reader.nextLine(); 
 				if (data.contains("Title")) {
 					String[] splitData = data.split(":");
-					tasks.add(splitData[1]);
+					// read three lines to get to the priority line in the text file 
+					data = reader.nextLine(); 
+					data = reader.nextLine(); 
+					
+					// this is the line that reads "Priotity: ____ " 
+					data = reader.nextLine(); 
+					String[] splitPriority = data.split(":");
+					
+					// read another line to get the status line 
+					// "Status: ____ " 
+					data = reader.nextLine(); 
+					String[] splitStatus = data.split(":");
+					
+					// read another line to get the duedate 
+					data = reader.nextLine(); 
+					String[] splitDate = data.split(":");
+					
+					tasks.add(splitData[1] + " | " + splitPriority[1] + " | " + splitStatus[1] + " | " + splitDate[1]);
+
 				}
 			}
 		} catch (FileNotFoundException e) {
