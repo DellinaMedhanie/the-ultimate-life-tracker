@@ -1,0 +1,34 @@
+diff --git a/src/main/Button.java b/src/main/Button.java
+index 68cfcb4..2169a04 100644
+--- a/src/main/Button.java
++++ b/src/main/Button.java
+@@ -26,8 +26,9 @@ public class Button extends JButton implements ActionListener {
+ 	public void actionPerformed(ActionEvent e) {
+ 		if (e.getSource() == this) {
+ 			if (actionState == "add task") {
+-				// pass locally saved user object into the form
+-				TaskForm form = new TaskForm(this.user);
++				// pass locally saved user object into the form; no TaskPanel to refresh
++				// since this button isn't necessarily attached to one (see TasksAtAGlance)
++				TaskForm form = new TaskForm(this.user, null);
+ 			}
+ 		} else {
+ 			System.out.println("some eclipse error...");
+diff --git a/src/main/TaskForm.java b/src/main/TaskForm.java
+index 3156db2..c49198e 100644
+--- a/src/main/TaskForm.java
++++ b/src/main/TaskForm.java
+@@ -236,8 +236,11 @@ class TaskForm
+     		 writer.newLine(); 
+     		 writer.close();
+     		 
+-    		 // refresh data on the TaskPanel
+-    		 tPanel.refreshUI();
++    		 // refresh data on the TaskPanel, if this form was opened from one
++    		 // (a standalone "quick add" button, e.g. on the dashboard, has no panel to refresh)
++    		 if (tPanel != null) {
++    			 tPanel.refreshUI();
++    		 }
+     	 } catch (IOException err) {
+     		 System.out.println("Whoops, sad day, we got an error :(");
+     		 err.printStackTrace();

@@ -1,0 +1,504 @@
+diff --git a/src/main/Budget.java b/src/main/Budget.java
+index 706e002..d9c7250 100644
+--- a/src/main/Budget.java
++++ b/src/main/Budget.java
+@@ -1,6 +1,105 @@
+ package main;
+ 
+-// Model layer 
++import java.time.LocalDateTime;
++import java.time.YearMonth;
++
++// Model layer
+ public class Budget {
+-	// getters/setters, getRemainingAmount(), isOverBudget()
++	/*
++	 * budgetId: String -> unique identifier auto-generated on creation
++	 * userId: String -> links the budget to the authenticated user
++	 * category: String -> the EXPENSE category this budget limit applies to
++	 * monthlyLimit: double -> the max amount the user wants to spend on this category this month
++	 * month: YearMonth -> the month/year this budget applies to
++	 * createdAt: LocalDateTime -> timestamp when the record was created in the system
++	 */
++	String budgetId;
++	String userId;
++	String category;
++	double monthlyLimit;
++	YearMonth month;
++	LocalDateTime createdAt;
++
++	// used when creating a brand new budget from the form
++	public Budget(String userId, String category, double monthlyLimit, YearMonth month) {
++		// create hash based on timestamp of LocalDateTime.now() for it to be unique,
++		// same approach Transaction.java uses for its id
++		int hash = LocalDateTime.now().hashCode();
++		this.budgetId = Integer.toString(hash);
++		this.userId = userId;
++		this.category = category;
++		this.monthlyLimit = monthlyLimit;
++		this.month = month;
++		this.createdAt = LocalDateTime.now();
++	}
++
++	// used when reconstructing a budget read back from budgets.txt
++	public Budget(String budgetId, String userId, String category, double monthlyLimit, YearMonth month,
++			LocalDateTime createdAt) {
++		this.budgetId = budgetId;
++		this.userId = userId;
++		this.category = category;
++		this.monthlyLimit = monthlyLimit;
++		this.month = month;
++		this.createdAt = createdAt;
++	}
++
++	public String getBudgetId() {
++		return budgetId;
++	}
++
++	// no setter for budgetId because it is a unique identifier
++
++	public String getUserId() {
++		return userId;
++	}
++
++	// no setter for userId because this is linked to the user account and should not be modified
++
++	public String getCategory() {
++		return category;
++	}
++
++	public void setCategory(String newCategory) {
++		category = newCategory;
++	}
++
++	public double getMonthlyLimit() {
++		return monthlyLimit;
++	}
++
++	public void setMonthlyLimit(double newMonthlyLimit) {
++		monthlyLimit = newMonthlyLimit;
++	}
++
++	public YearMonth getMonth() {
++		return month;
++	}
++
++	public void setMonth(YearMonth newMonth) {
++		month = newMonth;
++	}
++
++	public LocalDateTime getCreatedAt() {
++		return createdAt;
++	}
++
++	// no setter for createdAt, since this is a unique timestamp based on when
++	// it was created and should not be modified
++
++	// how much of the monthly limit is left, given what's already been spent in this category
++	public double getRemainingAmount(double spent) {
++		return monthlyLimit - spent;
++	}
++
++	// whether spending in this category has exceeded the monthly limit
++	public boolean isOverBudget(double spent) {
++		return spent > monthlyLimit;
++	}
++
++	@Override
++	public String toString() {
++		return getBudgetId() + " | " + getUserId() + " | " + getCategory() + " | " + getMonthlyLimit() + " | "
++				+ getMonth() + " | " + getCreatedAt();
++	}
+ }
+diff --git a/src/main/BudgetController.java b/src/main/BudgetController.java
+index b6caaf3..ff42e73 100644
+--- a/src/main/BudgetController.java
++++ b/src/main/BudgetController.java
+@@ -3,15 +3,48 @@ package main;
+ // Controller Layer
+ public class BudgetController {
+ 
++	private final CurrentUser user;
++	private final BudgetService budgetService;
++	// panel to refresh once a budget is saved; kept mutable since BudgetPanel
++	// re-creates itself (see NavBar) so the reference can go stale otherwise
++	private BudgetPanel budgetPanel;
++
++	public BudgetController(CurrentUser user, BudgetPanel budgetPanel) {
++		this.user = user;
++		this.budgetPanel = budgetPanel;
++		this.budgetService = new BudgetService();
++	}
++
++	public void setBudgetPanel(BudgetPanel budgetPanel) {
++		this.budgetPanel = budgetPanel;
++	}
++
+ 	public void onMonthChange() {
+-		
++		if (budgetPanel != null) {
++			budgetPanel.refreshUI();
++		}
+ 	}
+-	
+-	public void onAddBudget() {
+-		
++
++	// saves the budget (adding it, or overwriting an existing one for the same
++	// category + month) and tells the Budget panel to refresh so the new limit shows up
++	public void onAddBudget(Budget budget) {
++		budgetService.setBudget(budget, user);
++		if (budgetPanel != null) {
++			budgetPanel.refreshUI();
++		}
+ 	}
+-	
++
+ 	public void onCopyFromLastMonth() {
+-		
++		if (budgetPanel == null) {
++			return;
++		}
++		java.time.YearMonth currentMonth = budgetPanel.getSelectedMonth();
++		java.time.YearMonth lastMonth = currentMonth.minusMonths(1);
++
++		for (Budget budget : budgetService.getBudgetsForMonth(user, lastMonth)) {
++			Budget copy = new Budget(user.getUsername(), budget.getCategory(), budget.getMonthlyLimit(), currentMonth);
++			budgetService.setBudget(copy, user);
++		}
++		budgetPanel.refreshUI();
+ 	}
+ }
+diff --git a/src/main/BudgetPanel.java b/src/main/BudgetPanel.java
+new file mode 100644
+index 0000000..a67b847
+--- /dev/null
++++ b/src/main/BudgetPanel.java
+@@ -0,0 +1,131 @@
++package main;
++
++import java.awt.Color;
++import java.awt.Font;
++import java.time.YearMonth;
++import java.util.List;
++
++import javax.swing.DefaultListModel;
++import javax.swing.JButton;
++import javax.swing.JLabel;
++import javax.swing.JList;
++import javax.swing.JPanel;
++import javax.swing.JScrollPane;
++import javax.swing.SwingConstants;
++import javax.swing.border.LineBorder;
++
++// Shows the signed-in user's budgets for a given month: the limit set per category,
++// how much has actually been spent (read from transactions.txt), and whether they're
++// over budget. Lets the user add/edit a budget via BudgetForm, or copy last month's
++// budgets forward.
++public class BudgetPanel extends JPanel {
++
++	private static final long serialVersionUID = 1L;
++
++	private final CurrentUser user;
++	private final BudgetService budgetService = new BudgetService();
++	private final BudgetController budgetController;
++
++	private YearMonth selectedMonth = YearMonth.now();
++
++	private JLabel monthLabel;
++	private DefaultListModel<String> listModel;
++	private JList<String> budgetList;
++
++	public BudgetPanel(CurrentUser user) {
++		this.user = user;
++		this.budgetController = new BudgetController(user, this);
++
++		this.setBounds(getVisibleRect());
++		this.setBorder(new LineBorder(new Color(0, 0, 0), 2));
++		this.setLayout(null);
++
++		JLabel title = new JLabel("Budget Tracker", SwingConstants.CENTER);
++		title.setFont(title.getFont().deriveFont(Font.BOLD, 18f));
++		title.setBounds(20, 10, 500, 25);
++		this.add(title);
++
++		JButton prevMonth = new JButton("<");
++		prevMonth.setBounds(30, 45, 40, 27);
++		prevMonth.setFocusable(false);
++		prevMonth.addActionListener(e -> changeMonth(-1));
++		this.add(prevMonth);
++
++		monthLabel = new JLabel(formatMonth(selectedMonth), SwingConstants.CENTER);
++		monthLabel.setFont(monthLabel.getFont().deriveFont(Font.BOLD, 16f));
++		monthLabel.setBounds(75, 45, 200, 27);
++		this.add(monthLabel);
++
++		JButton nextMonth = new JButton(">");
++		nextMonth.setBounds(280, 45, 40, 27);
++		nextMonth.setFocusable(false);
++		nextMonth.addActionListener(e -> changeMonth(1));
++		this.add(nextMonth);
++
++		JButton addBudgetButton = new JButton("Add Budget");
++		addBudgetButton.setBounds(340, 45, 130, 27);
++		addBudgetButton.setFocusable(false);
++		addBudgetButton.addActionListener(e -> openBudgetForm());
++		this.add(addBudgetButton);
++
++		JButton copyLastMonthButton = new JButton("Copy Last Month");
++		copyLastMonthButton.setBounds(30, 82, 150, 27);
++		copyLastMonthButton.setFocusable(false);
++		copyLastMonthButton.addActionListener(e -> budgetController.onCopyFromLastMonth());
++		this.add(copyLastMonthButton);
++
++		listModel = new DefaultListModel<>();
++		budgetList = new JList<>(listModel);
++		JScrollPane scrollPane = new JScrollPane(budgetList);
++		scrollPane.setBounds(30, 120, 485, 265);
++		this.add(scrollPane);
++
++		refreshUI();
++	}
++
++	private void changeMonth(int delta) {
++		selectedMonth = selectedMonth.plusMonths(delta);
++		refreshUI();
++	}
++
++	private void openBudgetForm() {
++		BudgetForm form = new BudgetForm(user, budgetController, selectedMonth);
++		form.setVisible(true);
++	}
++
++	// re-reads budgets.txt/transactions.txt for the selected month and redraws the list.
++	// called after adding a budget, changing the month, or copying last month's budgets.
++	public void refreshUI() {
++		monthLabel.setText(formatMonth(selectedMonth));
++		listModel.clear();
++
++		List<Budget> budgets = budgetService.getBudgetsForMonth(user, selectedMonth);
++		if (budgets.isEmpty()) {
++			listModel.addElement("No budgets set for " + formatMonth(selectedMonth) + " yet.");
++		} else {
++			for (Budget budget : budgets) {
++				BudgetStatus status = budgetService.getBudgetStatus(budget, user);
++				listModel.addElement(formatBudgetLine(status));
++			}
++		}
++
++		revalidate();
++		repaint();
++	}
++
++	private String formatBudgetLine(BudgetStatus status) {
++		Budget budget = status.getBudget();
++		String flag = status.isOverBudget() ? "  [OVER BUDGET]" : "";
++		return String.format("%s: $%.2f spent of $%.2f limit ($%.2f remaining)%s", budget.getCategory(),
++				status.getSpent(), budget.getMonthlyLimit(), status.getRemaining(), flag);
++	}
++
++	private String formatMonth(YearMonth month) {
++		return month.getMonth().toString().charAt(0) + month.getMonth().toString().substring(1).toLowerCase()
++				+ " " + month.getYear();
++	}
++
++	public YearMonth getSelectedMonth() {
++		return selectedMonth;
++	}
++}
+diff --git a/src/main/BudgetService.java b/src/main/BudgetService.java
+index 6ee3996..31057f5 100644
+--- a/src/main/BudgetService.java
++++ b/src/main/BudgetService.java
+@@ -1,16 +1,182 @@
+ package main;
+ 
+-// Service Layer
++import java.io.BufferedWriter;
++import java.io.File;
++import java.io.FileNotFoundException;
++import java.io.FileWriter;
++import java.io.IOException;
++import java.time.LocalDateTime;
++import java.time.YearMonth;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Scanner;
++
++// Service layer
+ public class BudgetService {
+-	public void setBudget() {
+-		
++
++	// saves (or overwrites, if one already exists for the same category + month) a budget
++	// to the user's budgets.txt file
++	public void setBudget(Budget budget, CurrentUser user) {
++		String username = user.getUsername();
++		File dir = new File("files/" + username);
++		if (!dir.exists()) {
++			dir.mkdirs();
++		}
++
++		String filePath = "files/" + username + "/budgets.txt";
++		List<Budget> existing = getBudgetsForUser(user);
++
++		boolean replaced = false;
++		for (int i = 0; i < existing.size(); i++) {
++			Budget b = existing.get(i);
++			if (b != null && b.getCategory().equals(budget.getCategory())
++					&& b.getMonth().equals(budget.getMonth())) {
++				existing.set(i, budget);
++				replaced = true;
++				break;
++			}
++		}
++		if (!replaced) {
++			existing.add(budget);
++		}
++
++		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
++			for (Budget b : existing) {
++				if (b != null) {
++					writer.write(b.toString());
++					writer.newLine();
++				}
++			}
++		} catch (IOException e) {
++			System.out.println("Could not write budgets.txt.");
++			e.printStackTrace();
++		}
++	}
++
++	// reads every budget line saved for this user, across all months
++	public List<Budget> getBudgetsForUser(CurrentUser user) {
++		List<Budget> budgets = new ArrayList<>();
++		String username = user.getUsername();
++		File f = new File("files/" + username + "/budgets.txt");
++
++		try (Scanner reader = new Scanner(f)) {
++			while (reader.hasNextLine()) {
++				String line = reader.nextLine();
++				if (!line.isBlank()) {
++					Budget budget = parseBudgetLine(line);
++					if (budget != null) {
++						budgets.add(budget);
++					}
++				}
++			}
++		} catch (FileNotFoundException e) {
++			// no budgets saved yet, that's fine
++		}
++
++		return budgets;
++	}
++
++	// only the budgets that apply to the given month
++	public List<Budget> getBudgetsForMonth(CurrentUser user, YearMonth month) {
++		List<Budget> budgets = new ArrayList<>();
++		for (Budget b : getBudgetsForUser(user)) {
++			if (b.getMonth().equals(month)) {
++				budgets.add(b);
++			}
++		}
++		return budgets;
++	}
++
++	// sums up all EXPENSE transactions in the given category for the given month,
++	// reading the same transactions.txt file FinancePanel/TransactionService use
++	public double getSpentByCategory(CurrentUser user, String category, YearMonth month) {
++		double spent = 0.0;
++		String username = user.getUsername();
++		File f = new File("files/" + username + "/transactions.txt");
++
++		try (Scanner reader = new Scanner(f)) {
++			while (reader.hasNextLine()) {
++				String line = reader.nextLine();
++				if (line.isBlank()) {
++					continue;
++				}
++				// format: id | userId | TYPE | amount | category | description | date | createdAt
++				String[] parts = line.split("\\s*\\|\\s*");
++				if (parts.length < 7) {
++					continue;
++				}
++				try {
++					String type = parts[2];
++					double amount = Double.parseDouble(parts[3]);
++					String txCategory = parts[4];
++					YearMonth txMonth = YearMonth.parse(parts[6].substring(0, 7));
++
++					if (type.equals("EXPENSE") && txCategory.equals(category) && txMonth.equals(month)) {
++						spent += amount;
++					}
++				} catch (Exception e) {
++					// skip malformed lines instead of crashing the whole read
++				}
++			}
++		} catch (FileNotFoundException e) {
++			// no transactions logged yet, that's fine
++		}
++
++		return spent;
++	}
++
++	// convenience bundle of a budget + how it's tracking so far this month
++	public BudgetStatus getBudgetStatus(Budget budget, CurrentUser user) {
++		double spent = getSpentByCategory(user, budget.getCategory(), budget.getMonth());
++		return new BudgetStatus(budget, spent);
++	}
++
++	// parses a single "budgetId | userId | category | monthlyLimit | month | createdAt" line
++	private Budget parseBudgetLine(String line) {
++		String[] parts = line.split("\\s*\\|\\s*");
++		if (parts.length < 6) {
++			return null;
++		}
++		try {
++			String budgetId = parts[0];
++			String userId = parts[1];
++			String category = parts[2];
++			double monthlyLimit = Double.parseDouble(parts[3]);
++			YearMonth month = YearMonth.parse(parts[4]);
++			LocalDateTime createdAt = LocalDateTime.parse(parts[5]);
++			return new Budget(budgetId, userId, category, monthlyLimit, month, createdAt);
++		} catch (Exception e) {
++			// skip malformed lines instead of crashing the whole read
++			System.out.println("Skipping malformed budget line: " + line);
++			return null;
++		}
+ 	}
+-	
+-	public void getSpentByCategory() {
+-		
++}
++
++// simple read-only pairing of a budget with how much of it has been spent so far;
++// package-private since only one public class is allowed per file
++class BudgetStatus {
++	private final Budget budget;
++	private final double spent;
++
++	BudgetStatus(Budget budget, double spent) {
++		this.budget = budget;
++		this.spent = spent;
+ 	}
+-	
+-	public void getBudgetStatus() {
+-		
++
++	public Budget getBudget() {
++		return budget;
++	}
++
++	public double getSpent() {
++		return spent;
++	}
++
++	public double getRemaining() {
++		return budget.getRemainingAmount(spent);
++	}
++
++	public boolean isOverBudget() {
++		return budget.isOverBudget(spent);
+ 	}
+ }
