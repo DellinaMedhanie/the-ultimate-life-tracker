@@ -32,7 +32,6 @@ public class TaskDetail extends JFrame implements ActionListener {
 	private String taskStatus; 
 	
 	private JButton saveButton;
-	
 	private JComboBox status;
 	private JComboBox priority;
 	private TaskPanel tPanel; 

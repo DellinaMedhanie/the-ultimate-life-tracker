@@ -34,7 +34,7 @@ public class TaskPanel extends JPanel implements ActionListener {
 	private final CurrentUser user;
 	
 	public TaskPanel(CurrentUser user) {
-		// save variable locally 
+		// save user variable locally 
 		this.user = user;
 		
 		readTextFile();
