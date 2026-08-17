@@ -283,7 +283,7 @@ class TaskForm
  }
  
 	public String createDateString(String year, String month, String day) {
-		// when the user selects the month, it's in Text (i.e. Jan, Feb)
+		// when the user selects the month, it's in a String format (i.e. Jan, Feb)
 		// and it needs to be converted into the numerical equivalent 
 		// To do this, search through the months array to find what index it is 
 		

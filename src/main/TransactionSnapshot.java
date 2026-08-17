@@ -42,28 +42,38 @@ public class TransactionSnapshot extends JPanel {
 		// transaction3 data 
 		String t3 = recentTransactions.get(2);
 		
-		JLabel transaction1 = new JLabel(t1);
-		transaction1.setBounds(6, 42, 209, 16);
+		// wrapped in <html> so a long line wraps onto a second line instead
+		// of being silently clipped by the default single-line JLabel; each
+		// row gets enough height to safely hold two lines of text
+		JLabel transaction1 = new JLabel("<html>" + t1 + "</html>");
+		transaction1.setBounds(6, 40, 224, 32);
 		add(transaction1);
 		
-		JLabel transaction2 = new JLabel(t2);
-		transaction2.setBounds(6, 81, 209, 16);
+		JLabel transaction2 = new JLabel("<html>" + t2 + "</html>");
+		transaction2.setBounds(6, 76, 224, 32);
 		add(transaction2);
 		
-		JLabel transaction3 = new JLabel(t3);
-		transaction3.setBounds(6, 124, 209, 16);
+		JLabel transaction3 = new JLabel("<html>" + t3 + "</html>");
+		transaction3.setBounds(6, 112, 224, 32);
 		add(transaction3);
 		
 		JLabel lblNewLabel = new JLabel("Recent Transactions");
-		lblNewLabel.setBounds(49, 6, 137, 16);
+		lblNewLabel.setBounds(40, 6, 160, 16);
 		add(lblNewLabel);
 	}
 
 	public void readTransactionFile() {
 		String name = this.user.getUsername();
 		filePath = "files/" + name + "/transactions.txt";
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+		// no transactions logged yet for this user is a normal state, not an
+		// error worth printing a stack trace for
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return;
+		}
+
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int count = 0;
             
@@ -71,8 +81,16 @@ public class TransactionSnapshot extends JPanel {
             	// clean data to not include the transaction id or username 
             	String regex = "^.*\\b" + Pattern.quote(name) + "\\s*\\|\\s*";
             	String cleanLine = line.replaceAll(regex, "");
+
+            	// this is a compact "snapshot" widget, not the full ledger, so
+            	// only keep the type/amount/category fields (drop the longer
+            	// description and the two dates) so each row reliably fits
+            	String[] fields = cleanLine.split("\\s*\\|\\s*");
+            	String summary = fields.length >= 3
+            			? fields[0] + " | " + fields[1] + " | " + fields[2]
+            			: cleanLine;
             	
-            	recentTransactions.add(count, cleanLine);
+            	recentTransactions.add(count, summary);
                 count++;
             }
             br.close();

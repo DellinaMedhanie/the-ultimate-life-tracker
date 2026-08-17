@@ -27,7 +27,7 @@ public class Button extends JButton implements ActionListener {
 		if (e.getSource() == this) {
 			if (actionState == "add task") {
 				// pass locally saved user object into the form
-				TaskForm form = new TaskForm(this.user);
+//				TaskForm form = new TaskForm(this.user);
 			}
 		} else {
 			System.out.println("some eclipse error...");

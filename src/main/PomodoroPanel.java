@@ -101,7 +101,7 @@ public class PomodoroPanel extends JPanel {
 		this.add(timeLabel);
 
 		JLabel taskLabel = new JLabel("Focus on task:");
-		taskLabel.setBounds(30, 130, 90, 20);
+		taskLabel.setBounds(30, 130, 110, 20);
 		this.add(taskLabel);
 
 		taskCombo = new JComboBox<>();
@@ -109,7 +109,7 @@ public class PomodoroPanel extends JPanel {
 		for (String taskTitle : PomodoroService.getTaskTitles(name)) {
 			taskCombo.addItem(taskTitle);
 		}
-		taskCombo.setBounds(125, 130, 250, 24);
+		taskCombo.setBounds(145, 130, 230, 24);
 		this.add(taskCombo);
 
 		JLabel focusLabel = new JLabel("Focus (min):");
@@ -129,11 +129,11 @@ public class PomodoroPanel extends JPanel {
 		this.add(breakSpinner);
 
 		JLabel longBreakLabel = new JLabel("Long break (min):");
-		longBreakLabel.setBounds(350, 165, 105, 20);
+		longBreakLabel.setBounds(350, 165, 125, 20);
 		this.add(longBreakLabel);
 
 		longBreakSpinner = new JSpinner(new SpinnerNumberModel(DEFAULT_LONG_BREAK_MINUTES, 1, 60, 1));
-		longBreakSpinner.setBounds(460, 163, 55, 24);
+		longBreakSpinner.setBounds(480, 163, 55, 24);
 		this.add(longBreakSpinner);
 
 		startButton = new JButton("Start Session");

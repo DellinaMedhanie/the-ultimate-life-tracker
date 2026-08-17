@@ -131,8 +131,11 @@ public class LoginFrame extends JFrame implements ActionListener {
 				tpass.setText("");
 			}
 		} else if (e.getSource() == createAccount) {
-			//hand off to the account-creation form
-			new AccountForm();
+			//hand off to the account-creation form, passing a reference to
+			//this window so the form can close it once an account is
+			//actually created (rather than leaving it open behind the form,
+			//which used to leave two Sign In windows open at once)
+			new AccountForm(this);
 		}
 	}
 }
@@ -164,16 +167,25 @@ class AccountForm
 	//Two boxes which hold buttons
 	private JButton sub;
 	private JButton reset;
+	//reference to the Sign In window that opened this form, so we can close
+	//it once account creation actually succeeds (instead of either leaving
+	//it open forever behind this form, or closing it immediately and
+	//stranding the user if they cancel out of this form instead)
+	private LoginFrame callingLoginFrame;
 	//The above is all defined/declared ahead of time here so that I can reference/use them within any method inside of this class without having to declare them again.
 
 	//Constructor method- used for building the window for a new account form for users to interact with using the boxes created above...
-	public AccountForm()
+	public AccountForm(LoginFrame callingLoginFrame)
 	{
+		this.callingLoginFrame = callingLoginFrame;
 		//Window customization...
 		setTitle("Create Account");
 		//X-position, Y-position, width, height...
 		setBounds(300, 90, 450, 300);
 		setResizable(false);
+		//if the user closes this window without creating an account, just
+		//dispose this form and let the Sign In window behind it stay put
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		//"c" is the empty box created earlier and we are making a new box for users to interact with in the account form...
 		c = getContentPane();
@@ -286,8 +298,14 @@ class AccountForm
 			JOptionPane.showMessageDialog(this, "Account created for " + username + ". You can now sign in.");
 			resetForm();
 
-			// close this form and return to the sign-in screen so the new user can log in
+			// close this form AND the original sign-in window it was opened
+			// from, then open exactly one fresh sign-in screen so the new
+			// user can log in (previously this left the old Sign In window
+			// open too, resulting in two overlapping Sign In windows)
 			this.dispose();
+			if (callingLoginFrame != null) {
+				callingLoginFrame.dispose();
+			}
 			new LoginFrame();
 		}
 		else if (e.getSource() == reset) {

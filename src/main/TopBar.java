@@ -15,7 +15,7 @@ public class TopBar extends JPanel {
 		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Welcome");
-		lblNewLabel.setBounds(270, 6, 61, 16);
+		lblNewLabel.setBounds(270, 6, 100, 16);
 		add(lblNewLabel);
 		
 	}

@@ -38,7 +38,7 @@ public class FinancePanel extends JPanel implements ActionListener {
 	/**
 	 * Create the panel.
 	 */
-	public FinancePanel(CurrentUser user) {
+	public FinancePanel(CurrentUser user) { 
 		// save user variable locally 
 		this.user = user; 
 		// get username of signed in user 
@@ -51,7 +51,7 @@ public class FinancePanel extends JPanel implements ActionListener {
 		setLayout(null);
 		
 		JLabel title = new JLabel(); 
-		title.setBounds(184, 6, 96, 16);
+		title.setBounds(184, 6, 140, 16);
 		title.setText("Finance tracker");
 		this.add(title);
 		

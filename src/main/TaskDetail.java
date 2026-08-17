@@ -36,9 +36,8 @@ public class TaskDetail extends JFrame implements ActionListener {
 	private JComboBox priority;
 	private TaskPanel tPanel; 
 		
-	private String statusStates[] 
-			= {"Not started", "In progress", "blocked", 
-				"complete", "cancelled"};
+	private String statusStates[] = {"Not started", "In progress", "blocked", 
+										"complete", "cancelled"};
 
 	private String priorityStates[] = {"Low", "Medium", "High", "Critical"};
 

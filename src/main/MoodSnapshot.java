@@ -46,28 +46,37 @@ public class MoodSnapshot extends JPanel {
 		String yAverage = calcYearAverage();
 		
 		JLabel lblNewLabel_2 = new JLabel("Average mood rating");
-		lblNewLabel_2.setBounds(52, 5, 131, 16);
+		lblNewLabel_2.setBounds(40, 5, 160, 16);
 		this.add(lblNewLabel_2);
 		
-		JLabel sevenDaysAverage = new JLabel("Past 7 days: " + dAverage);
-		sevenDaysAverage.setBounds(0, 43, 230, 16);
+		// wrapped in <html> with an explicit width so long text (e.g. "No data
+		// for the past 7 days") wraps onto a second line instead of being
+		// silently clipped with "..." by the default single-line JLabel
+		JLabel sevenDaysAverage = new JLabel("<html>Past 7 days: " + dAverage + "</html>");
+		sevenDaysAverage.setBounds(0, 40, 230, 34);
 		this.add(sevenDaysAverage);
 		
-		JLabel monthAverage = new JLabel("Month: " + mAverage);
-		monthAverage.setBounds(0, 71, 230, 16);
+		JLabel monthAverage = new JLabel("<html>Month: " + mAverage + "</html>");
+		monthAverage.setBounds(0, 76, 230, 34);
 		this.add(monthAverage);
 		
-		JLabel yearAverage = new JLabel("Year: " + yAverage);
-		yearAverage.setBounds(0, 99, 230, 16);
+		JLabel yearAverage = new JLabel("<html>Year: " + yAverage + "</html>");
+		yearAverage.setBounds(0, 112, 230, 34);
 		this.add(yearAverage);
 	}
 
 	public void readMoodFile() {
 		String name = this.user.getUsername();
 		filePath = "files/" + name + "/mood.txt";
-		
+
+		// no mood entries logged yet for this user is a normal state, not an
+		// error worth printing a stack trace for
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return;
+		}
+
 		try {
-			File file = new File(filePath);
 			Scanner reader = new Scanner(file);
 
 			while (reader.hasNextLine()) {
