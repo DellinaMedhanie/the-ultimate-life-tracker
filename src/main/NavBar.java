@@ -90,20 +90,20 @@ public class NavBar extends JFrame {
 		btnTasks.setBounds(6, 73, 117, 29);
 		panel.add(btnTasks);
 		
-		JButton btnNewButton_2 = new JButton("Mood");
-		btnNewButton_2.addActionListener(new ActionListener() {
+		JButton btnNewButton_2_1_1 = new JButton("Pomodoro");
+		btnNewButton_2_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cardPanel.removeAll();
 				// create new panel when clicking on the feature 
 				// to account for updated data
-				moodTracker = new MoodPanel(user); 
-				cardPanel.add(moodTracker);
-				cardPanel.revalidate();
+				pomodoroTimer = new PomodoroPanel(user); 
+				cardPanel.add(pomodoroTimer);
+				cardPanel.revalidate();	
 				cardPanel.repaint();
 			}
 		});
-		btnNewButton_2.setBounds(6, 114, 117, 29);
-		panel.add(btnNewButton_2);
+		btnNewButton_2_1_1.setBounds(6, 114, 117, 29);
+		panel.add(btnNewButton_2_1_1);
 		
 		JButton btnNewButton_2_1 = new JButton("Finances");
 		btnNewButton_2_1.addActionListener(new ActionListener() {
@@ -120,20 +120,6 @@ public class NavBar extends JFrame {
 		btnNewButton_2_1.setBounds(6, 155, 117, 29);
 		panel.add(btnNewButton_2_1);
 		
-		JButton btnNewButton_2_1_1 = new JButton("Pomodoro");
-		btnNewButton_2_1_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cardPanel.removeAll();
-				// create new panel when clicking on the feature 
-				// to account for updated data
-				pomodoroTimer = new PomodoroPanel(user); 
-				cardPanel.add(pomodoroTimer);
-				cardPanel.revalidate();	
-				cardPanel.repaint();
-			}
-		});
-		btnNewButton_2_1_1.setBounds(6, 196, 117, 29);
-		panel.add(btnNewButton_2_1_1);
 		
 		JButton btnBudget = new JButton("Budget");
 		btnBudget.addActionListener(new ActionListener() {
@@ -145,8 +131,23 @@ public class NavBar extends JFrame {
 				cardPanel.repaint();
 			}
 		});
-		btnBudget.setBounds(6, 237, 117, 29);
+		btnBudget.setBounds(6, 196, 117, 29);
 		panel.add(btnBudget);
+		
+		JButton btnNewButton_2 = new JButton("Mood");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cardPanel.removeAll();
+				// create new panel when clicking on the feature 
+				// to account for updated data
+				moodTracker = new MoodPanel(user); 
+				cardPanel.add(moodTracker);
+				cardPanel.revalidate();
+				cardPanel.repaint();
+			}
+		});
+		btnNewButton_2.setBounds(6, 237, 117, 29);
+		panel.add(btnNewButton_2);
 		
 		JButton logOut = new JButton("Log out");
 		logOut.addActionListener(new ActionListener() {
