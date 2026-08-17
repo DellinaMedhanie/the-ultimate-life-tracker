@@ -56,7 +56,7 @@ public class TaskPanel extends JPanel implements ActionListener {
 		taskButton.setBounds(362, 34, buttonSize.width, buttonSize.height);		
 		
 		taskList = TaskList(tasks);
-		
+				
 		this.add(label);
 		this.add(taskButton);
 		this.add(taskList);
@@ -79,9 +79,16 @@ public class TaskPanel extends JPanel implements ActionListener {
 	public JScrollPane TaskList(List<String> taskData) {
 				
 		DefaultListModel<String> model = new DefaultListModel<>();
-		for (int i = 0; i < taskData.size(); i++) {
-			model.addElement(taskData.get(i));
+		
+		// if taskData is empty, then add a "empty state" message to the model
+		if (taskData.isEmpty()) {
+			model.addElement("No task entries yet");
+		} else {
+			for (int i = 0; i < taskData.size(); i++) {
+				model.addElement(taskData.get(i));
+			};
 		};
+		
 		
 		JList<String> list = new JList<>(model);
 		
@@ -94,7 +101,7 @@ public class TaskPanel extends JPanel implements ActionListener {
 					
 					if (selectedValue != null) {
 						TaskDetail detailView = new TaskDetail(selectedValue, TaskPanel.this.user, TaskPanel.this);
-					}
+					} 
 				}
 			}
 		});
@@ -151,6 +158,7 @@ public class TaskPanel extends JPanel implements ActionListener {
 			System.out.println("Error occured");
 			e.printStackTrace();
 		}
+	
 	}
 	
 	public void refreshUI() {
