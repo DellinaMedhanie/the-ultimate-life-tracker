@@ -1,3 +1,7 @@
 userId,userName,password
 1,alice,password1
 2,bob,password2
+3,sarah,password5
+4,chad,c
+5,Robby,r
+6,amber,password
